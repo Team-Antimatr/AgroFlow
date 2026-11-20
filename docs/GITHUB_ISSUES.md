@@ -186,3 +186,39 @@ Prepare all presentation materials, physical hardware labels, and rehearse the l
 #### ✅ How to Test (Definition of Done)
 - All physical bottles and hardware have clean printed labels attached.
 - Pitch deck is ready and the live demonstration runs smoothly from phone to hardware.
+
+---
+
+### Issue 8: [Android CLI] Setup Android CLI build environment and compile installable APK
+**Labels:** `mobile-app`, `build-system`, `android-cli`
+
+#### Goal
+Set up the command-line Android build system using Android CLI and Gradle to build, package, and generate the installable AgroFlow mobile application APK (app-debug.apk) without requiring heavy IDE overhead.
+
+#### Key Context
+The project specifies Android CLI for mobile app development. All compilation, packaging, and device deployment must be executable directly from terminal commands.
+
+#### Steps to Execute
+1. [ ] Project Initialization:
+   - Create the Android project structure under android/ with settings.gradle, build.gradle, and Gradle wrapper (gradlew).
+   - Configure compileSdk (34), minSdk (24), and targetSdk (34).
+   - Add Jetpack Compose, Material3, and Bluetooth permissions in AndroidManifest.xml.
+2. [ ] Android CLI & Environment Setup:
+   - Configure ANDROID_HOME and command-line tools path.
+   - Verify SDK components (build-tools, platforms) via CLI.
+3. [ ] Compile Debug APK via Terminal:
+   - Run CLI command: ./gradlew assembleDebug
+   - Ensure clean compilation without syntax or dependency errors.
+4. [ ] Output Artifact Verification:
+   - Confirm generated APK location: android/app/build/outputs/apk/debug/app-debug.apk
+5. [ ] Device Installation & Smoke Test:
+   - Connect phone via USB with USB debugging enabled.
+   - Install APK via command line: adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+   - Verify app launches to the main AgroFlow screen.
+6. [ ] Document Build Commands:
+   - Add simple build & run instructions to README and AGENTS.md.
+
+#### How to Test (Definition of Done)
+- Running ./gradlew assembleDebug from terminal outputs BUILD SUCCESSFUL.
+- The output app-debug.apk file is generated and successfully installs on an Android phone via adb.
+- The app launches cleanly and requests Bluetooth permissions on first run.
