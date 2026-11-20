@@ -33,8 +33,12 @@
     @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
 
     /* Cards */
-    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; }
-    .card-title { font-size: 16px; font-weight: 700; color: white; display: flex; align-items: center; gap: 8px; margin-bottom: 14px; border-bottom: 1px solid var(--card-border); padding-bottom: 10px; }
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+    .card-title { font-size: 16px; font-weight: 700; color: white; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 14px; border-bottom: 1px solid var(--card-border); padding-bottom: 10px; }
+
+    /* Callout Card */
+    .callout { background: linear-gradient(135deg, #1E293B 0%, #172554 100%); border: 1.5px solid #3B82F6; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+    .callout-title { font-size: 17px; font-weight: bold; color: #60A5FA; display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 
     /* Table */
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -53,6 +57,10 @@
 
     .pin-pill { background: #0F172A; border: 1px solid var(--primary); color: var(--primary); font-family: monospace; font-size: 13px; font-weight: bold; padding: 3px 8px; border-radius: 4px; }
 
+    /* Simulation Mapping Card */
+    .sim-card { background: #0D1930; border: 1px solid #1E3A8A; border-radius: 8px; padding: 16px; margin-top: 12px; }
+    .sim-badge { background: #1D4ED8; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+
     /* Visual Arduino Board Representation */
     .board-diagram { background: #0b1329; border: 2px solid #1E3A8A; border-radius: 10px; padding: 18px; position: relative; }
     .board-header { font-weight: bold; color: #60A5FA; margin-bottom: 12px; font-size: 15px; display: flex; justify-content: space-between; }
@@ -66,7 +74,7 @@
     /* Code Box */
     .code-container { position: relative; margin-top: 10px; }
     pre { background: #090D16; border: 1px solid var(--card-border); padding: 14px; border-radius: 8px; font-family: monospace; font-size: 12px; overflow-x: auto; color: #A5F3FC; max-height: 280px; }
-    .copy-btn { position: absolute; top: 10px; right: 10px; background: #0284C7; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; }
+    .copy-btn { background: #0284C7; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; }
     .copy-btn:hover { background: #0369A1; }
   </style>
 </head>
@@ -79,15 +87,69 @@
     <div>
       <span class="badge">CIRCUIT &amp; WIRING GUIDE</span>
       <h1>AgroFlow AI &mdash; Wokwi Simulation &amp; Physical Wiring</h1>
-      <p class="subtitle">Complete visual pinout and wiring guide for Arduino Uno simulation &amp; hardware assembly</p>
+      <p class="subtitle">Complete technical wiring guide &amp; potentiometer sensor-simulation logic for Arduino Uno</p>
     </div>
     <div>
       <a href="https://wokwi.com" target="_blank" style="background:#22C55E;color:white;text-decoration:none;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:bold;display:inline-block;">Open Wokwi Simulator &nearr;</a>
     </div>
   </header>
 
+  <!-- SPECIAL SECTION: HOW POTENTIOMETERS SIMULATE SENSORS IN WOKWI -->
+  <div class="callout">
+    <div class="callout-title">
+      <span>💡 Why &amp; How Potentiometers Simulate Sensors in Wokwi</span>
+      <span class="sim-badge">Core Simulation Concept</span>
+    </div>
+    <p style="font-size:13px; color:#E2E8F0; margin-bottom: 14px;">
+      In <b>Wokwi.com</b>, proprietary probe modules (like physical water TDS probes and soil capacitance prongs) do not exist as stock components. 
+      However, <b>both real physical sensors and potentiometers work identically at the electrical level:</b> they both output a variable <b>0V to 5V analog voltage</b> into the Arduino's ADC pins (<code>A0</code> and <code>A1</code>).
+    </p>
+
+    <div class="grid" style="margin-bottom: 0;">
+      <!-- TDS Potentiometer -->
+      <div class="sim-card">
+        <div style="font-weight:bold; color:#FDE68A; margin-bottom: 6px; font-size:14px;">
+          🧪 Potentiometer 1 &rarr; TDS Water Sensor (Pin A0)
+        </div>
+        <p style="font-size:12px; color:#94A3B8; margin-bottom: 8px;">
+          In real water, higher dissolved salts increase electrical conductivity, shifting voltage. In Wokwi, turning this knob simulates varying water salinity:
+        </p>
+        <ul style="font-size:12px; color:#E2E8F0; padding-left: 18px; margin-bottom: 8px;">
+          <li><b>Knob at Left (0V &ndash; 1.5V):</b> <code>0 &ndash; 500 ppm</code> &rarr; <b>Safe / Clean Water</b> &rarr; SG90 stays at <b>0&deg; (Bypass)</b>.</li>
+          <li><b>Knob turned Past Halfway (&gt; 1.7V):</b> <code>&gt; 500 ppm</code> (e.g. 850 ppm) &rarr; <b>High Salinity Alert</b> &rarr; SG90 immediately rotates to <b>90&deg; (Divert to Bio-Filter)</b>!</li>
+        </ul>
+        <div style="background:#050B14; border-radius:6px; padding:8px; font-family:monospace; font-size:11px; color:#38BDF8;">
+          int tdsPPM = map(analogRead(A0), 0, 1023, 0, 1500);<br/>
+          if (tdsPPM > 500) { servoDiverter.write(90); }
+        </div>
+      </div>
+
+      <!-- Soil Moisture Potentiometer -->
+      <div class="sim-card">
+        <div style="font-weight:bold; color:#86EFAC; margin-bottom: 6px; font-size:14px;">
+          🌱 Potentiometer 2 &rarr; Soil Moisture Sensor (Pin A1)
+        </div>
+        <p style="font-size:12px; color:#94A3B8; margin-bottom: 8px;">
+          Real soil probes change impedance based on moisture content. In Wokwi, turning this knob directly simulates soil hydration percentage:
+        </p>
+        <ul style="font-size:12px; color:#E2E8F0; padding-left: 18px; margin-bottom: 8px;">
+          <li><b>Knob at Low (Dry Soil, &lt; 30%):</b> System permits irrigation cycle; pump is triggered.</li>
+          <li><b>Knob at High (Wet Soil, &ge; 60%):</b> <b>Safety Lock Activated!</b> System aborts pump to prevent root waterlogging &amp; rot.</li>
+        </ul>
+        <div style="background:#050B14; border-radius:6px; padding:8px; font-family:monospace; font-size:11px; color:#22C55E;">
+          int soilMoisture = map(analogRead(A1), 0, 1023, 0, 100);<br/>
+          if (soilMoisture >= 60) { abortPumpRelays(); }
+        </div>
+      </div>
+    </div>
+    
+    <div style="margin-top:12px; font-size:12px; color:#93C5FD; font-style:italic;">
+      ✨ <b>Zero Code Change for Real Hardware:</b> When moving from Wokwi to physical Arduino Uno, the code remains identical because the real TDS sensor signal wire also plugs directly into <b>Pin A0</b> and outputs the exact same 0&ndash;5V analog range!
+    </div>
+  </div>
+
   <!-- Section 1: Visual Wiring Matrix -->
-  <div class="card" style="margin-bottom: 24px;">
+  <div class="card">
     <div class="card-title">
       <span>🔌 Master Pinout &amp; Wiring Table (Connect These Wires)</span>
     </div>
@@ -223,13 +285,13 @@
       </div>
 
       <div class="step-box">
-        <div class="step-num">Step 3: Test TDS Water Impurity (> 500 ppm)</div>
-        Turn <b>Potentiometer 1</b> knob above halfway (representing &gt; 500 ppm). Watch the <b>SG90 Servo</b> rotate to <b>90&deg;</b> (routing water to the bio-filter).
+        <div class="step-num">Step 3: Test High Salinity Water (> 500 ppm)</div>
+        Turn <b>Potentiometer 1 (TDS)</b> knob above halfway (&gt; 500 ppm). Watch the <b>SG90 Servo</b> rotate to <b>90&deg;</b> (routing water to the bio-sand filter).
       </div>
 
       <div class="step-box">
         <div class="step-num">Step 4: Test Clean Water (<= 500 ppm)</div>
-        Turn <b>Potentiometer 1</b> knob lower (representing &le; 500 ppm). Watch the <b>SG90 Servo</b> stay at <b>0&deg;</b> (direct clean bypass).
+        Turn <b>Potentiometer 1 (TDS)</b> knob back down (&le; 500 ppm). Watch the <b>SG90 Servo</b> return to <b>0&deg;</b> (direct clean bypass).
       </div>
     </div>
 
