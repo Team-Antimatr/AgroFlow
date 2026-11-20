@@ -20,7 +20,7 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background: var(--bg); color: var(--text); padding: 24px; line-height: 1.5; }
-    .container { max-width: 1200px; margin: 0 auto; }
+    .container { max-width: 1240px; margin: 0 auto; }
 
     /* Header */
     header { background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%); border: 1px solid var(--card-border); border-radius: 12px; padding: 24px 32px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
@@ -85,136 +85,162 @@
   <!-- Header -->
   <header>
     <div>
-      <span class="badge">CIRCUIT &amp; WIRING GUIDE</span>
-      <h1>AgroFlow AI &mdash; Wokwi Simulation &amp; Physical Wiring</h1>
-      <p class="subtitle">Complete technical wiring guide with Breadboard &amp; Potentiometer simulation logic for Arduino Uno</p>
+      <span class="badge">OFFICIAL BOM &amp; WIRING GUIDE</span>
+      <h1>AgroFlow AI &mdash; Circuit Simulation &amp; Hardware Assembly</h1>
+      <p class="subtitle">Complete technical wiring guide aligned 1:1 with the Official AgroFlow Hardware BOM List</p>
     </div>
     <div>
       <a href="https://wokwi.com" target="_blank" style="background:#22C55E;color:white;text-decoration:none;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:bold;display:inline-block;">Open Wokwi Simulator &nearr;</a>
     </div>
   </header>
 
-  <!-- SPECIAL SECTION: HOW POTENTIOMETERS SIMULATE SENSORS IN WOKWI -->
-  <div class="callout">
-    <div class="callout-title">
-      <span>💡 Why &amp; How Potentiometers Simulate Sensors in Wokwi</span>
-      <span class="sim-badge">Core Simulation Concept</span>
-    </div>
-    <p style="font-size:13px; color:#E2E8F0; margin-bottom: 14px;">
-      In <b>Wokwi.com</b>, proprietary probe modules (like physical water TDS probes and soil capacitance prongs) do not exist as stock components. 
-      However, <b>both real physical sensors and potentiometers work identically at the electrical level:</b> they both output a variable <b>0V to 5V analog voltage</b> into the Arduino's ADC pins (<code>A0</code> and <code>A1</code>).
-    </p>
-
-    <div class="grid" style="margin-bottom: 0;">
-      <!-- TDS Potentiometer -->
-      <div class="sim-card">
-        <div style="font-weight:bold; color:#FDE68A; margin-bottom: 6px; font-size:14px;">
-          🧪 Potentiometer 1 &rarr; TDS Water Sensor (Pin A0)
-        </div>
-        <p style="font-size:12px; color:#94A3B8; margin-bottom: 8px;">
-          In real water, higher dissolved salts increase electrical conductivity, shifting voltage. In Wokwi, turning this knob simulates varying water salinity:
-        </p>
-        <ul style="font-size:12px; color:#E2E8F0; padding-left: 18px; margin-bottom: 8px;">
-          <li><b>Knob at Left (0V &ndash; 1.5V):</b> <code>0 &ndash; 500 ppm</code> &rarr; <b>Safe / Clean Water</b> &rarr; SG90 stays at <b>0&deg; (Bypass)</b>.</li>
-          <li><b>Knob turned Past Halfway (&gt; 1.7V):</b> <code>&gt; 500 ppm</code> (e.g. 850 ppm) &rarr; <b>High Salinity Alert</b> &rarr; SG90 immediately rotates to <b>90&deg; (Divert to Bio-Filter)</b>!</li>
-        </ul>
-        <div style="background:#050B14; border-radius:6px; padding:8px; font-family:monospace; font-size:11px; color:#38BDF8;">
-          int tdsPPM = map(analogRead(A0), 0, 1023, 0, 1500);<br/>
-          if (tdsPPM > 500) { servoDiverter.write(90); }
-        </div>
-      </div>
-
-      <!-- Soil Moisture Potentiometer -->
-      <div class="sim-card">
-        <div style="font-weight:bold; color:#86EFAC; margin-bottom: 6px; font-size:14px;">
-          🌱 Potentiometer 2 &rarr; Soil Moisture Sensor (Pin A1)
-        </div>
-        <p style="font-size:12px; color:#94A3B8; margin-bottom: 8px;">
-          Real soil probes change impedance based on moisture content. In Wokwi, turning this knob directly simulates soil hydration percentage:
-        </p>
-        <ul style="font-size:12px; color:#E2E8F0; padding-left: 18px; margin-bottom: 8px;">
-          <li><b>Knob at Low (Dry Soil, &lt; 30%):</b> System permits irrigation cycle; pump is triggered.</li>
-          <li><b>Knob at High (Wet Soil, &ge; 60%):</b> <b>Safety Lock Activated!</b> System aborts pump to prevent root waterlogging &amp; rot.</li>
-        </ul>
-        <div style="background:#050B14; border-radius:6px; padding:8px; font-family:monospace; font-size:11px; color:#22C55E;">
-          int soilMoisture = map(analogRead(A1), 0, 1023, 0, 100);<br/>
-          if (soilMoisture >= 60) { abortPumpRelays(); }
-        </div>
-      </div>
-    </div>
-    
-    <div style="margin-top:12px; font-size:12px; color:#93C5FD; font-style:italic;">
-      ✨ <b>Zero Code Change for Real Hardware:</b> When moving from Wokwi to physical Arduino Uno, the code remains identical because the real TDS sensor signal wire also plugs directly into <b>Pin A0</b> and outputs the exact same 0&ndash;5V analog range!
-    </div>
-  </div>
-
-  <!-- Section 1: Visual Wiring Matrix with Breadboard -->
+  <!-- OFFICIAL BOM LIST TABLE (MATCHING PROJECT IMAGE) -->
   <div class="card">
     <div class="card-title">
-      <span>🔌 Master Pinout &amp; Breadboard Wiring Table (Connect These Wires)</span>
+      <span>📦 Official BOM Component List &amp; Simulation Mapping</span>
+      <span style="font-size:12px;color:#38BDF8;font-weight:normal;">Kit Cost: ~₹1,880 &ndash; ₹1,960</span>
     </div>
     <table>
       <thead>
         <tr>
-          <th>Component</th>
-          <th>Component Pin</th>
-          <th>Wire Color</th>
-          <th>Connection Point (Arduino / Breadboard)</th>
-          <th>Purpose in Simulation / Circuit</th>
+          <th>#</th>
+          <th>Official Component</th>
+          <th>Qty</th>
+          <th>Role in AgroFlow Project</th>
+          <th>How It Is Wired / Simulated in Wokwi</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><b>🍞 Breadboard Power Rails</b></td>
-          <td>Top &amp; Bottom Rails</td>
-          <td><span class="wire-tag wire-red">Red (+5V)</span><br/><span class="wire-tag wire-black">Black (GND)</span></td>
-          <td><span class="pin-pill">Arduino 5V</span> &rarr; Breadboard (+) Rail<br/><span class="pin-pill">Arduino GND</span> &rarr; Breadboard (-) Rail</td>
-          <td>Powers all sensors, servo, and relay module logic via breadboard bus</td>
+          <td>1</td>
+          <td><b>Arduino Uno + USB Cable</b></td>
+          <td>1</td>
+          <td>Main microcontroller brain that controls sensors, valves, pumps, and app communication</td>
+          <td><code>wokwi-arduino-uno</code> &mdash; Core processor</td>
         </tr>
         <tr>
-          <td><b>🧪 TDS Water Sensor</b><br/><span style="color:#94a3b8;font-size:11px;">(Wokwi: Potentiometer 1)</span></td>
-          <td>VCC / GND<br/>Center Wiper (SIG)</td>
-          <td><span class="wire-tag wire-red">Red</span> / <span class="wire-tag wire-black">Black</span><br/><span class="wire-tag wire-yellow">Yellow</span></td>
-          <td>Breadboard (+) and (-) Rails<br/><span class="pin-pill">Arduino Pin A0</span></td>
-          <td>Simulates water salinity (0 to 1500 ppm). Threshold: <b>500 ppm</b></td>
+          <td>2</td>
+          <td><b>Breadboard</b></td>
+          <td>1</td>
+          <td>Solderless board for neat and secure power/signal connections</td>
+          <td><code>wokwi-breadboard</code> &mdash; Distributes +5V and GND rails cleanly</td>
         </tr>
         <tr>
-          <td><b>🌱 Soil Moisture Sensor</b><br/><span style="color:#94a3b8;font-size:11px;">(Wokwi: Potentiometer 2)</span></td>
-          <td>VCC / GND<br/>Center Wiper (SIG)</td>
-          <td><span class="wire-tag wire-red">Red</span> / <span class="wire-tag wire-black">Black</span><br/><span class="wire-tag wire-green">Green</span></td>
-          <td>Breadboard (+) and (-) Rails<br/><span class="pin-pill">Arduino Pin A1</span></td>
-          <td>Simulates soil moisture (0% to 100%). Safety limit: <b>&ge; 60% aborts</b></td>
+          <td>3</td>
+          <td><b>HC-05 Bluetooth Module</b></td>
+          <td>1</td>
+          <td>Connects Arduino Uno wirelessly to the custom mobile app</td>
+          <td>SoftwareSerial on <b>Pin 10 (RX)</b> &amp; <b>Pin 11 (TX)</b></td>
         </tr>
         <tr>
-          <td><b>⚙️ SG90 Servo Motor</b><br/><span style="color:#94a3b8;font-size:11px;">(Automated Diverter Valve)</span></td>
-          <td>V+ / GND<br/>PWM Control (Orange Wire)</td>
-          <td><span class="wire-tag wire-red">Red</span> / <span class="wire-tag wire-black">Black</span><br/><span class="wire-tag wire-orange">Orange</span></td>
-          <td>Breadboard (+) and (-) Rails<br/><span class="pin-pill">Arduino Pin 3</span> (PWM)</td>
-          <td><b>0&deg; = Bypass Filter</b> (Clean) | <b>90&deg; = Divert to Bio-Filter</b> (Saline)</td>
+          <td>4</td>
+          <td><b>TDS Sensor Module</b><br/><i>(Water Purity)</i></td>
+          <td>1</td>
+          <td>Measures water impurity/salinity in Reservoir 1 (CLEAN vs DIRTY)</td>
+          <td><b>Potentiometer 1 &rarr; Pin A0</b> (Knob simulates 0 to 1500 ppm, threshold 500 ppm)</td>
         </tr>
         <tr>
-          <td><b>⚡ Relay 1 (Main Pump)</b><br/><span style="color:#94a3b8;font-size:11px;">(Green Indicator LED in Wokwi)</span></td>
-          <td>Control Input (IN1)<br/>Anode via 220&Omega; Resistor</td>
-          <td><span class="wire-tag wire-blue">Blue</span><br/><span class="wire-tag wire-black">Black</span></td>
-          <td><span class="pin-pill">Arduino Pin 7</span> &rarr; Resistor &rarr; LED<br/>Cathode &rarr; Breadboard (-) Rail</td>
-          <td>Turns Reservoir 1 submersible lift pump ON/OFF</td>
+          <td>5</td>
+          <td><b>Capacitive Soil Moisture Sensor</b></td>
+          <td>1</td>
+          <td>Placed in the Farm/Yield tray to monitor soil moisture &amp; condition</td>
+          <td><b>Potentiometer 2 &rarr; Pin A1</b> (Knob simulates 0% to 100% moisture)</td>
         </tr>
         <tr>
-          <td><b>💧 Relay 2 (Dosing Pump)</b><br/><span style="color:#94a3b8;font-size:11px;">(Yellow Indicator LED in Wokwi)</span></td>
-          <td>Control Input (IN2)<br/>Anode via 220&Omega; Resistor</td>
-          <td><span class="wire-tag wire-blue">Blue</span><br/><span class="wire-tag wire-black">Black</span></td>
-          <td><span class="pin-pill">Arduino Pin 8</span> &rarr; Resistor &rarr; LED<br/>Cathode &rarr; Breadboard (-) Rail</td>
-          <td>Pulses liquid fertilizer dosing pump (~30 mL/cycle)</td>
+          <td>6</td>
+          <td><b>SG90 Micro Servo Motor</b></td>
+          <td>1</td>
+          <td>Automated diversion gate that routes dirty water to the Filtration unit</td>
+          <td><code>wokwi-servo</code> &rarr; <b>Pin 3 (PWM)</b>: 0&deg; Clean Bypass | 90&deg; Bio-Filter</td>
         </tr>
         <tr>
-          <td><b>📶 HC-05 Bluetooth Module</b><br/><span style="color:#94a3b8;font-size:11px;">(UART Mobile App Link)</span></td>
-          <td>TX Pin (Module)<br/>RX Pin (Module)</td>
-          <td><span class="wire-tag wire-green">Green</span><br/><span class="wire-tag wire-yellow">Yellow</span></td>
-          <td><span class="pin-pill">Arduino Pin 10</span> (RX)<br/><span class="pin-pill">Arduino Pin 11</span> (TX)</td>
-          <td>Two-way SoftwareSerial link (9600 baud) for app commands &amp; telemetry</td>
+          <td>7</td>
+          <td><b>2-Channel 5V Relay Module</b></td>
+          <td>1</td>
+          <td>Electronic switch to turn the Main Water Pump and Fertilizer Pump ON/OFF</td>
+          <td><b>Dual <code>wokwi-relay-module</code></b>:<br/>&bull; Relay 1 &rarr; <b>Pin 7</b> (Pump 1)<br/>&bull; Relay 2 &rarr; <b>Pin 8</b> (Pump 2)</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td><b>Mini Submersible Water Pumps (5V DC)</b></td>
+          <td>2</td>
+          <td><b>Pump 1:</b> Reservoir 1 main water pump.<br/><b>Pump 2:</b> Fertilizer + Nutrients dosing pump.</td>
+          <td>Switched via <b>Relay 1 (Pin 7)</b> &amp; <b>Relay 2 (Pin 8)</b></td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td><b>5V 2A Power Adapter</b></td>
+          <td>1</td>
+          <td>External power supply to run the 2 pumps and servo motor smoothly</td>
+          <td>Breadboard Top/Bottom Red (+5V) and Black (GND) power buses</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td><b>Jumper Wires (M-M &amp; M-F)</b></td>
+          <td>1 Set</td>
+          <td>Connects all modules cleanly to the Arduino and breadboard</td>
+          <td>Color-coded jumper wires in Wokwi (Red, Black, Yellow, Green, Blue, Orange)</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td><b>Silicon Water Pipes + T-Connector</b></td>
+          <td>1 Set</td>
+          <td>Flexible tubing for Main Pipe &amp; Farm Pipe, plus T-joint for fertilizer mixing</td>
+          <td>Hydraulic plumbing (Reservoir 1 &rarr; TDS &rarr; SG90 &rarr; Filter &rarr; T-Mixer)</td>
+        </tr>
+        <tr>
+          <td>12</td>
+          <td><b>Transparent Plastic Jars / Bottles</b></td>
+          <td>3</td>
+          <td>1: Reservoir 1 (Groundwater), 2: Bio-Filter Column (sand, charcoal, pebbles), 3: Fertilizer Jar</td>
+          <td>Physical exhibition model reservoirs</td>
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- SPECIAL SECTION: POTENTIOMETERS & DUAL RELAYS EXPLAINED -->
+  <div class="callout">
+    <div class="callout-title">
+      <span>💡 How the Sensors &amp; 2-Channel Relay Module Work in Simulation</span>
+      <span class="sim-badge">Simulation Electronics</span>
+    </div>
+    
+    <div class="grid" style="margin-bottom: 0;">
+      <!-- TDS & Soil Moisture Potentiometers -->
+      <div class="sim-card">
+        <div style="font-weight:bold; color:#FDE68A; margin-bottom: 6px; font-size:14px;">
+          🧪 Analog Sensors &rarr; Potentiometers (Pins A0 &amp; A1)
+        </div>
+        <p style="font-size:12px; color:#94A3B8; margin-bottom: 8px;">
+          Real TDS and Soil Moisture probes output <b>0V to 5V analog voltage</b>. In Wokwi, potentiometers give the exact same 0&ndash;5V into the Arduino ADC:
+        </p>
+        <ul style="font-size:12px; color:#E2E8F0; padding-left: 18px; margin-bottom: 8px;">
+          <li><b>Potentiometer 1 (TDS &rarr; Pin A0):</b><br/>
+            &bull; Left knob (&le; 500 ppm): Clean water &rarr; SG90 stays at <b>0&deg; (Bypass)</b>.<br/>
+            &bull; Right knob (&gt; 500 ppm): Saline alert &rarr; SG90 rotates to <b>90&deg; (Filter)</b>!
+          </li>
+          <li style="margin-top:6px;"><b>Potentiometer 2 (Soil Moisture &rarr; Pin A1):</b><br/>
+            &bull; Dry (&lt; 30%): Permitted cycle.<br/>
+            &bull; Wet (&ge; 60%): <b>Safety Lock</b> shuts off pump relays to protect roots.
+          </li>
+        </ul>
+      </div>
+
+      <!-- 2-Channel Relay Module -->
+      <div class="sim-card">
+        <div style="font-weight:bold; color:#38BDF8; margin-bottom: 6px; font-size:14px;">
+          ⚡ 2-Channel 5V Relay Module (Pins 7 &amp; 8)
+        </div>
+        <p style="font-size:12px; color:#94A3B8; margin-bottom: 8px;">
+          Arduino pins cannot deliver enough current to run motor pumps directly. The <b>2-Channel Relay Module</b> acts as the electronic switch:
+        </p>
+        <ul style="font-size:12px; color:#E2E8F0; padding-left: 18px; margin-bottom: 8px;">
+          <li><b>Relay Channel 1 (Pin 7):</b> Controls the <b>Main Submersible Pump</b> in Reservoir 1. In Wokwi, the relay clicks and lights up when water flows.</li>
+          <li><b>Relay Channel 2 (Pin 8):</b> Controls the <b>Liquid Fertilizer Dosing Pump</b> in Reservoir 2. Pulses for 2-3 seconds to inject the 30 mL dose.</li>
+        </ul>
+      </div>
+    </div>
   </div>
 
   <!-- Section 2: Visual Pin Map + Steps -->
@@ -223,17 +249,17 @@
     <!-- Left: Virtual Board Pin Map -->
     <div class="card">
       <div class="card-title">
-        <span>📟 Arduino Uno &amp; Breadboard Pin Map</span>
+        <span>📟 Arduino Uno &amp; Breadboard Wiring Summary</span>
       </div>
       <div class="board-diagram">
         <div class="board-header">
-          <span>ARDUINO UNO R3 + BREADBOARD</span>
-          <span style="font-size:11px;color:#94a3b8;">Common Power Rail System</span>
+          <span>ARDUINO UNO R3 &bull; COMPLETE CIRCUIT</span>
+          <span style="font-size:11px;color:#94a3b8;">Common Breadboard Bus</span>
         </div>
 
         <div class="pin-row active">
           <div><b style="color:#FDE68A;">Pin A0</b> &mdash; Analog Input</div>
-          <span class="wire-tag wire-yellow">TDS Potentiometer Wiper</span>
+          <span class="wire-tag wire-yellow">TDS Sensor Potentiometer Wiper</span>
         </div>
 
         <div class="pin-row active">
@@ -243,17 +269,17 @@
 
         <div class="pin-row active">
           <div><b style="color:#FDBA74;">Pin 3</b> &mdash; Digital PWM Output</div>
-          <span class="wire-tag wire-orange">SG90 Servo PWM Signal</span>
+          <span class="wire-tag wire-orange">SG90 Servo Diverter PWM Signal</span>
         </div>
 
         <div class="pin-row active">
           <div><b style="color:#7DD3FC;">Pin 7</b> &mdash; Digital Output</div>
-          <span class="wire-tag wire-blue">Relay 1: Main Pump (Green LED on BB)</span>
+          <span class="wire-tag wire-blue">Relay 1: Main Pump Control (IN1)</span>
         </div>
 
         <div class="pin-row active">
           <div><b style="color:#7DD3FC;">Pin 8</b> &mdash; Digital Output</div>
-          <span class="wire-tag wire-blue">Relay 2: Fertilizer (Yellow LED on BB)</span>
+          <span class="wire-tag wire-blue">Relay 2: Fertilizer Pump Control (IN2)</span>
         </div>
 
         <div class="pin-row active">
@@ -280,8 +306,8 @@
       </div>
 
       <div class="step-box">
-        <div class="step-num">Step 2: Load the Wokwi diagram.json (with Breadboard)</div>
-        Copy the JSON code below and paste it into the <code>diagram.json</code> tab in Wokwi. The <b>Arduino Uno, full Breadboard, 2 Potentiometers, SG90 Servo, and LEDs</b> will appear neatly wired on screen!
+        <div class="step-num">Step 2: Load the Wokwi diagram.json</div>
+        Copy the JSON code below and paste it into the <code>diagram.json</code> tab in Wokwi. The <b>Arduino Uno, Breadboard, 2 Potentiometers, SG90 Servo, and 2-Channel Relay Modules</b> will appear wired on screen!
       </div>
 
       <div class="step-box">
@@ -290,21 +316,21 @@
       </div>
 
       <div class="step-box">
-        <div class="step-num">Step 4: Test Clean Water (<= 500 ppm)</div>
-        Turn <b>Potentiometer 1 (TDS)</b> knob back down (&le; 500 ppm). Watch the <b>SG90 Servo</b> return to <b>0&deg;</b> (direct clean bypass).
+        <div class="step-num">Step 4: Watch Relays Switch</div>
+        Watch <b>Relay 1 (Pin 7)</b> click ON to start the main pump, and <b>Relay 2 (Pin 8)</b> pulse for precision fertilizer dosing!
       </div>
     </div>
 
   </div>
 
-  <!-- Section 3: Wokwi diagram.json with Breadboard (Copyable) -->
+  <!-- Section 3: Wokwi diagram.json with Dual Relays & Breadboard -->
   <div class="card">
     <div class="card-title">
-      <span>📄 Ready-to-Use Wokwi diagram.json with Breadboard (Copy &amp; Paste)</span>
+      <span>📄 Complete Wokwi diagram.json (Arduino + Breadboard + Dual Relays + Servo + Potentiometers)</span>
       <button class="copy-btn" onclick="copyDiagramJson()">Copy JSON</button>
     </div>
     <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">
-      Paste this JSON directly into the <code>diagram.json</code> tab on Wokwi. It renders the full <b>Arduino Uno + Breadboard + 2 Potentiometers + SG90 Servo + 2 Indicator LEDs + Resistors</b> with realistic colored jumper wires.
+      Paste this JSON directly into the <code>diagram.json</code> tab on Wokwi. It renders the full system with the <b>2-Channel Relay Module</b> exactly as listed in your BOM list!
     </p>
     <div class="code-container">
       <pre id="jsonContent">{
@@ -312,41 +338,39 @@
   "author": "AgroFlow AI Team",
   "editor": "wokwi",
   "parts": [
-    { "type": "wokwi-arduino-uno", "id": "uno", "top": 80, "left": 40, "attrs": {} },
-    { "type": "wokwi-breadboard", "id": "bb1", "top": 80, "left": 400, "attrs": {} },
-    { "type": "wokwi-potentiometer", "id": "pot_tds", "top": -40, "left": 480, "attrs": { "label": "TDS Sensor (A0)" } },
-    { "type": "wokwi-potentiometer", "id": "pot_soil", "top": -40, "left": 660, "attrs": { "label": "Soil Moisture (A1)" } },
-    { "type": "wokwi-servo", "id": "servo_diverter", "top": -30, "left": 860, "attrs": { "label": "SG90 Diverter Valve (Pin 3)" } },
-    { "type": "wokwi-led", "id": "led_main_pump", "top": 360, "left": 500, "attrs": { "color": "green", "label": "Main Pump (Pin 7)" } },
-    { "type": "wokwi-led", "id": "led_dose_pump", "top": 360, "left": 620, "attrs": { "color": "yellow", "label": "Dosing Pump (Pin 8)" } },
-    { "type": "wokwi-resistor", "id": "r1", "top": 420, "left": 490, "attrs": { "value": "220" } },
-    { "type": "wokwi-resistor", "id": "r2", "top": 420, "left": 610, "attrs": { "value": "220" } }
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 120, "left": 40, "attrs": {} },
+    { "type": "wokwi-breadboard", "id": "bb1", "top": 120, "left": 400, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot_tds", "top": -30, "left": 480, "attrs": { "label": "TDS Sensor Module (Pin A0)" } },
+    { "type": "wokwi-potentiometer", "id": "pot_soil", "top": -30, "left": 680, "attrs": { "label": "Soil Moisture Sensor (Pin A1)" } },
+    { "type": "wokwi-servo", "id": "servo_diverter", "top": -20, "left": 880, "attrs": { "label": "SG90 Servo Diverter (Pin 3)" } },
+    { "type": "wokwi-relay-module", "id": "relay1", "top": 420, "left": 460, "attrs": { "label": "Relay 1: Main Pump (Pin 7)" } },
+    { "type": "wokwi-relay-module", "id": "relay2", "top": 420, "left": 680, "attrs": { "label": "Relay 2: Fertilizer Pump (Pin 8)" } }
   ],
   "connections": [
     [ "uno:5V", "bb1:tp.1", "red", [ "v-20", "h320" ] ],
     [ "uno:GND.1", "bb1:tn.1", "black", [ "v-30", "h340" ] ],
-    [ "bb1:tp.25", "bb1:bp.25", "red", [ "v120" ] ],
-    [ "bb1:tn.25", "bb1:bn.25", "black", [ "v120" ] ],
+    [ "bb1:tp.25", "bb1:bp.25", "red", [ "v140" ] ],
+    [ "bb1:tn.25", "bb1:bn.25", "black", [ "v140" ] ],
 
     [ "bb1:tp.5", "pot_tds:VCC", "red", [ "v-30" ] ],
     [ "bb1:tn.5", "pot_tds:GND", "black", [ "v-40" ] ],
     [ "pot_tds:SIG", "uno:A0", "yellow", [ "v20", "h-360" ] ],
 
-    [ "bb1:tp.14", "pot_soil:VCC", "red", [ "v-30" ] ],
-    [ "bb1:tn.14", "pot_soil:GND", "black", [ "v-40" ] ],
-    [ "pot_soil:SIG", "uno:A1", "green", [ "v30", "h-520" ] ],
+    [ "bb1:tp.15", "pot_soil:VCC", "red", [ "v-30" ] ],
+    [ "bb1:tn.15", "pot_soil:GND", "black", [ "v-40" ] ],
+    [ "pot_soil:SIG", "uno:A1", "green", [ "v30", "h-540" ] ],
 
     [ "bb1:tp.24", "servo_diverter:V+", "red", [ "v-20" ] ],
     [ "bb1:tn.24", "servo_diverter:GND", "black", [ "v-30" ] ],
-    [ "uno:3", "servo_diverter:PWM", "orange", [ "v-50", "h720" ] ],
+    [ "uno:3", "servo_diverter:PWM", "orange", [ "v-50", "h740" ] ],
 
-    [ "uno:7", "r1:1", "blue", [ "v40", "h380" ] ],
-    [ "r1:2", "led_main_pump:A", "blue", [ "v-10" ] ],
-    [ "led_main_pump:C", "bb1:bn.6", "black", [ "v30" ] ],
+    [ "bb1:bp.6", "relay1:VCC", "red", [ "v20" ] ],
+    [ "bb1:bn.6", "relay1:GND", "black", [ "v30" ] ],
+    [ "uno:7", "relay1:IN", "blue", [ "v60", "h380" ] ],
 
-    [ "uno:8", "r2:1", "blue", [ "v50", "h480" ] ],
-    [ "r2:2", "led_dose_pump:A", "blue", [ "v-10" ] ],
-    [ "led_dose_pump:C", "bb1:bn.12", "black", [ "v30" ] ]
+    [ "bb1:bp.16", "relay2:VCC", "red", [ "v20" ] ],
+    [ "bb1:bn.16", "relay2:GND", "black", [ "v30" ] ],
+    [ "uno:8", "relay2:IN", "blue", [ "v70", "h580" ] ]
   ],
   "dependencies": {}
 }</pre>
@@ -359,7 +383,7 @@
   function copyDiagramJson() {
     const text = document.getElementById('jsonContent').innerText;
     navigator.clipboard.writeText(text).then(() => {
-      alert("Wokwi diagram.json (with Breadboard) copied to clipboard! Paste it into Wokwi.com");
+      alert("Wokwi diagram.json (with Dual Relays + Breadboard) copied! Paste it into Wokwi.com");
     });
   }
 </script>
