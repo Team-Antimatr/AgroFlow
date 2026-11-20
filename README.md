@@ -1,10 +1,7 @@
 # AgroFlow AI
 ### Smart Water Filtration & Precision Fertigation Unit
 
-![Status](https://shields.io)
-![Milestone](https://shields.io)
-![Platform](https://shields.io)
-![App](https://shields.io)
+**Status:** Active Development | **Milestone:** Paid Milestone | **Hardware:** Arduino Uno & IoT | **App:** Android CLI & Firebase
 
 ---
 
