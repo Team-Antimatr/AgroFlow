@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgroFlow AI — Circuit Simulation & Wiring Guide</title>
+  <style>
+    :root {
+      --bg: #0F172A;
+      --card-bg: #1E293B;
+      --card-border: #334155;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --primary: #38BDF8;
+      --green: #22C55E;
+      --amber: #F59E0B;
+      --red: #F43F5E;
+      --purple: #A855F7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 24px; line-height: 1.5; }
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    /* Header */
+    header { background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%); border: 1px solid var(--card-border); border-radius: 12px; padding: 24px 32px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+    .badge { background: #0284C7; color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; letter-spacing: 0.5px; }
+    h1 { font-size: 24px; margin-top: 8px; color: var(--primary); }
+    .subtitle { color: var(--text-muted); font-size: 14px; }
+
+    /* Grid Layout */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+    /* Cards */
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; }
+    .card-title { font-size: 16px; font-weight: 700; color: white; display: flex; align-items: center; gap: 8px; margin-bottom: 14px; border-bottom: 1px solid var(--card-border); padding-bottom: 10px; }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; padding: 10px; background: #0F172A; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--card-border); }
+    td { padding: 12px 10px; border-bottom: 1px solid #283548; }
+    tr:hover { background: rgba(255,255,255,0.02); }
+
+    /* Wire Color Tags */
+    .wire-tag { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .wire-red { background: rgba(244,63,94,0.2); color: #fda4af; border: 1px solid #f43f5e; }
+    .wire-black { background: rgba(148,163,184,0.2); color: #cbd5e1; border: 1px solid #64748b; }
+    .wire-yellow { background: rgba(245,158,11,0.2); color: #fde68a; border: 1px solid #f59e0b; }
+    .wire-green { background: rgba(34,197,94,0.2); color: #86efac; border: 1px solid #22c55e; }
+    .wire-orange { background: rgba(249,115,22,0.2); color: #fdba74; border: 1px solid #f97316; }
+    .wire-blue { background: rgba(56,189,248,0.2); color: #7dd3fc; border: 1px solid #38bdf8; }
+
+    .pin-pill { background: #0F172A; border: 1px solid var(--primary); color: var(--primary); font-family: monospace; font-size: 13px; font-weight: bold; padding: 3px 8px; border-radius: 4px; }
+
+    /* Visual Arduino Board Representation */
+    .board-diagram { background: #0b1329; border: 2px solid #1E3A8A; border-radius: 10px; padding: 18px; position: relative; }
+    .board-header { font-weight: bold; color: #60A5FA; margin-bottom: 12px; font-size: 15px; display: flex; justify-content: space-between; }
+    .pin-row { display: flex; justify-content: space-between; margin-bottom: 8px; padding: 8px 12px; background: #132247; border-radius: 6px; font-size: 12px; align-items: center; }
+    .pin-row.active { border-left: 4px solid var(--green); }
+
+    /* Steps */
+    .step-box { background: #131D31; border-left: 4px solid var(--primary); padding: 14px 18px; margin-bottom: 12px; border-radius: 0 8px 8px 0; font-size: 13px; }
+    .step-num { font-weight: bold; color: var(--primary); margin-bottom: 4px; }
+
+    /* Code Box */
+    .code-container { position: relative; margin-top: 10px; }
+    pre { background: #090D16; border: 1px solid var(--card-border); padding: 14px; border-radius: 8px; font-family: monospace; font-size: 12px; overflow-x: auto; color: #A5F3FC; max-height: 280px; }
+    .copy-btn { position: absolute; top: 10px; right: 10px; background: #0284C7; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; }
+    .copy-btn:hover { background: #0369A1; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div>
+      <span class="badge">CIRCUIT &amp; WIRING GUIDE</span>
+      <h1>AgroFlow AI &mdash; Wokwi Simulation &amp; Physical Wiring</h1>
+      <p class="subtitle">Complete visual pinout and wiring guide for Arduino Uno simulation &amp; hardware assembly</p>
+    </div>
+    <div>
+      <a href="https://wokwi.com" target="_blank" style="background:#22C55E;color:white;text-decoration:none;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:bold;display:inline-block;">Open Wokwi Simulator &nearr;</a>
+    </div>
+  </header>
+
+  <!-- Section 1: Visual Wiring Matrix -->
+  <div class="card" style="margin-bottom: 24px;">
+    <div class="card-title">
+      <span>🔌 Master Pinout &amp; Wiring Table (Connect These Wires)</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Component Pin</th>
+          <th>Wire Color</th>
+          <th>Arduino Uno Pin</th>
+          <th>Purpose in Simulation / Circuit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>🧪 TDS Water Sensor</b><br/><span style="color:#94a3b8;font-size:11px;">(Wokwi: Potentiometer 1)</span></td>
+          <td>Center Wiper Pin (Signal)</td>
+          <td><span class="wire-tag wire-yellow">Yellow</span></td>
+          <td><span class="pin-pill">Pin A0</span></td>
+          <td>Simulates water salinity (0 to 1500 ppm). Threshold: <b>500 ppm</b></td>
+        </tr>
+        <tr>
+          <td><b>🌱 Soil Moisture Sensor</b><br/><span style="color:#94a3b8;font-size:11px;">(Wokwi: Potentiometer 2)</span></td>
+          <td>Center Wiper Pin (Signal)</td>
+          <td><span class="wire-tag wire-green">Green</span></td>
+          <td><span class="pin-pill">Pin A1</span></td>
+          <td>Simulates soil moisture (0% to 100%). Safety limit: <b>&ge; 60% aborts</b></td>
+        </tr>
+        <tr>
+          <td><b>⚙️ SG90 Servo Motor</b><br/><span style="color:#94a3b8;font-size:11px;">(Automated Diverter Valve)</span></td>
+          <td>PWM Control (Orange Wire)</td>
+          <td><span class="wire-tag wire-orange">Orange</span></td>
+          <td><span class="pin-pill">Pin 3</span> (PWM)</td>
+          <td><b>0&deg; = Bypass Filter</b> (Clean) | <b>90&deg; = Divert to Bio-Filter</b> (Saline)</td>
+        </tr>
+        <tr>
+          <td><b>⚡ Relay 1 (Main Pump)</b><br/><span style="color:#94a3b8;font-size:11px;">(Controls Reservoir 1 Pump)</span></td>
+          <td>Control Input (IN1)</td>
+          <td><span class="wire-tag wire-blue">Blue</span></td>
+          <td><span class="pin-pill">Pin 7</span></td>
+          <td>Turns Reservoir 1 submersible lift pump ON/OFF</td>
+        </tr>
+        <tr>
+          <td><b>💧 Relay 2 (Dosing Pump)</b><br/><span style="color:#94a3b8;font-size:11px;">(Liquid NPK Fertilizer)</span></td>
+          <td>Control Input (IN2)</td>
+          <td><span class="wire-tag wire-blue">Blue</span></td>
+          <td><span class="pin-pill">Pin 8</span></td>
+          <td>Pulses liquid fertilizer dosing pump (~30 mL/cycle)</td>
+        </tr>
+        <tr>
+          <td><b>📶 HC-05 Bluetooth Module</b><br/><span style="color:#94a3b8;font-size:11px;">(UART Mobile App Link)</span></td>
+          <td>TX Pin (Module)<br/>RX Pin (Module)</td>
+          <td><span class="wire-tag wire-green">Green</span><br/><span class="wire-tag wire-yellow">Yellow</span></td>
+          <td><span class="pin-pill">Pin 10</span> (RX)<br/><span class="pin-pill">Pin 11</span> (TX)</td>
+          <td>Two-way SoftwareSerial link (9600 baud) for app commands &amp; telemetry</td>
+        </tr>
+        <tr>
+          <td><b>🔋 Common Power Rails</b><br/><span style="color:#94a3b8;font-size:11px;">(Breadboard Power Bus)</span></td>
+          <td>VCC (+5V)<br/>GND (Ground)</td>
+          <td><span class="wire-tag wire-red">Red (+5V)</span><br/><span class="wire-tag wire-black">Black (GND)</span></td>
+          <td><span class="pin-pill">5V</span><br/><span class="pin-pill">GND</span></td>
+          <td>Powers all sensors, servo, and relay module logic</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Section 2: Visual Pin Map + Steps -->
+  <div class="grid">
+    
+    <!-- Left: Virtual Board Pin Map -->
+    <div class="card">
+      <div class="card-title">
+        <span>📟 Arduino Uno Pin Layout Map</span>
+      </div>
+      <div class="board-diagram">
+        <div class="board-header">
+          <span>ARDUINO UNO R3</span>
+          <span style="font-size:11px;color:#94a3b8;">5V Microcontroller</span>
+        </div>
+
+        <div class="pin-row active">
+          <div><b style="color:#FDE68A;">Pin A0</b> &mdash; Analog Input</div>
+          <span class="wire-tag wire-yellow">TDS Sensor (Potentiometer 1)</span>
+        </div>
+
+        <div class="pin-row active">
+          <div><b style="color:#86EFAC;">Pin A1</b> &mdash; Analog Input</div>
+          <span class="wire-tag wire-green">Soil Moisture (Potentiometer 2)</span>
+        </div>
+
+        <div class="pin-row active">
+          <div><b style="color:#FDBA74;">Pin 3</b> &mdash; Digital PWM Output</div>
+          <span class="wire-tag wire-orange">SG90 Servo Motor (PWM Signal)</span>
+        </div>
+
+        <div class="pin-row active">
+          <div><b style="color:#7DD3FC;">Pin 7</b> &mdash; Digital Output</div>
+          <span class="wire-tag wire-blue">Relay 1: Main Submersible Pump</span>
+        </div>
+
+        <div class="pin-row active">
+          <div><b style="color:#7DD3FC;">Pin 8</b> &mdash; Digital Output</div>
+          <span class="wire-tag wire-blue">Relay 2: Fertilizer Dosing Pump</span>
+        </div>
+
+        <div class="pin-row active">
+          <div><b style="color:#CBD5E1;">Pin 10 / 11</b> &mdash; SoftwareSerial</div>
+          <span class="wire-tag wire-black">HC-05 Bluetooth Module (RX / TX)</span>
+        </div>
+
+        <div class="pin-row">
+          <div><b style="color:#FDA4AF;">5V / GND</b> &mdash; Power Bus</div>
+          <span class="wire-tag wire-red">+5V VCC</span> &nbsp; <span class="wire-tag wire-black">GND</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: How to Test in Wokwi -->
+    <div class="card">
+      <div class="card-title">
+        <span>🧪 How to Test in Wokwi (Step-by-Step)</span>
+      </div>
+
+      <div class="step-box">
+        <div class="step-num">Step 1: Open Wokwi</div>
+        Go to <b>wokwi.com</b> and select <b>Arduino Uno</b> project.
+      </div>
+
+      <div class="step-box">
+        <div class="step-num">Step 2: Load the Wokwi diagram.json</div>
+        Copy the JSON code below and paste it into the <code>diagram.json</code> tab in Wokwi. All components and colored wires will appear on screen automatically!
+      </div>
+
+      <div class="step-box">
+        <div class="step-num">Step 3: Test TDS Water Impurity (> 500 ppm)</div>
+        Turn <b>Potentiometer 1</b> knob above halfway (representing &gt; 500 ppm). Watch the <b>SG90 Servo</b> rotate to <b>90&deg;</b> (routing water to the bio-filter).
+      </div>
+
+      <div class="step-box">
+        <div class="step-num">Step 4: Test Clean Water (<= 500 ppm)</div>
+        Turn <b>Potentiometer 1</b> knob lower (representing &le; 500 ppm). Watch the <b>SG90 Servo</b> stay at <b>0&deg;</b> (direct clean bypass).
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Section 3: Wokwi diagram.json (Copyable) -->
+  <div class="card">
+    <div class="card-title">
+      <span>📄 Ready-to-Use Wokwi diagram.json (Copy &amp; Paste into Wokwi)</span>
+      <button class="copy-btn" onclick="copyDiagramJson()">Copy JSON</button>
+    </div>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">
+      Paste this JSON directly into the <code>diagram.json</code> tab on Wokwi. It automatically connects the Arduino Uno, 2 potentiometers, SG90 servo, and relay indicator LEDs.
+    </p>
+    <div class="code-container">
+      <pre id="jsonContent">{
+  "version": 1,
+  "author": "AgroFlow AI Team",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 120, "left": 280, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot_tds", "top": 60, "left": 60, "attrs": { "label": "TDS Sensor (A0)" } },
+    { "type": "wokwi-potentiometer", "id": "pot_soil", "top": 220, "left": 60, "attrs": { "label": "Soil Moisture (A1)" } },
+    { "type": "wokwi-servo", "id": "servo_diverter", "top": 60, "left": 640, "attrs": { "label": "SG90 Diverter Valve (Pin 3)" } },
+    { "type": "wokwi-led", "id": "led_main_pump", "top": 240, "left": 660, "attrs": { "color": "green", "label": "Main Pump (Pin 7)" } },
+    { "type": "wokwi-led", "id": "led_dose_pump", "top": 320, "left": 660, "attrs": { "color": "yellow", "label": "Dosing Pump (Pin 8)" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": 280, "left": 600, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r2", "top": 360, "left": 600, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    [ "uno:5V", "pot_tds:VCC", "red", [ "v-30", "h-260" ] ],
+    [ "uno:GND.1", "pot_tds:GND", "black", [ "v-40", "h-280" ] ],
+    [ "pot_tds:SIG", "uno:A0", "yellow", [ "v40", "h180" ] ],
+
+    [ "uno:5V", "pot_soil:VCC", "red", [ "v-30", "h-260", "v160" ] ],
+    [ "uno:GND.1", "pot_soil:GND", "black", [ "v-40", "h-280", "v160" ] ],
+    [ "pot_soil:SIG", "uno:A1", "green", [ "v30", "h180" ] ],
+
+    [ "uno:5V", "servo_diverter:V+", "red", [ "v-30", "h280" ] ],
+    [ "uno:GND.1", "servo_diverter:GND", "black", [ "v-40", "h300" ] ],
+    [ "uno:3", "servo_diverter:PWM", "orange", [ "v-20", "h240" ] ],
+
+    [ "uno:7", "r1:1", "blue", [ "v20", "h180" ] ],
+    [ "r1:2", "led_main_pump:A", "blue", [ "h20" ] ],
+    [ "led_main_pump:C", "uno:GND.2", "black", [ "v30", "h-180" ] ],
+
+    [ "uno:8", "r2:1", "blue", [ "v40", "h160" ] ],
+    [ "r2:2", "led_dose_pump:A", "blue", [ "h20" ] ],
+    [ "led_dose_pump:C", "uno:GND.2", "black", [ "v30", "h-180" ] ]
+  ],
+  "dependencies": {}
+}</pre>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function copyDiagramJson() {
+    const text = document.getElementById('jsonContent').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      alert("Wokwi diagram.json copied to clipboard! Paste it into Wokwi.com");
+    });
+  }
+</script>
+
+</body>
+</html>
