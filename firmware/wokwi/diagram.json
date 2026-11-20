@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "author": "AgroFlow AI Team",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 80, "left": 40, "attrs": {} },
+    { "type": "wokwi-breadboard", "id": "bb1", "top": 80, "left": 400, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot_tds", "top": -40, "left": 480, "attrs": { "label": "TDS Sensor (A0)" } },
+    { "type": "wokwi-potentiometer", "id": "pot_soil", "top": -40, "left": 660, "attrs": { "label": "Soil Moisture (A1)" } },
+    { "type": "wokwi-servo", "id": "servo_diverter", "top": -30, "left": 860, "attrs": { "label": "SG90 Diverter Valve (Pin 3)" } },
+    { "type": "wokwi-led", "id": "led_main_pump", "top": 360, "left": 500, "attrs": { "color": "green", "label": "Main Pump (Pin 7)" } },
+    { "type": "wokwi-led", "id": "led_dose_pump", "top": 360, "left": 620, "attrs": { "color": "yellow", "label": "Dosing Pump (Pin 8)" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": 420, "left": 490, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r2", "top": 420, "left": 610, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    [ "uno:5V", "bb1:tp.1", "red", [ "v-20", "h320" ] ],
+    [ "uno:GND.1", "bb1:tn.1", "black", [ "v-30", "h340" ] ],
+    [ "bb1:tp.25", "bb1:bp.25", "red", [ "v120" ] ],
+    [ "bb1:tn.25", "bb1:bn.25", "black", [ "v120" ] ],
+
+    [ "bb1:tp.5", "pot_tds:VCC", "red", [ "v-30" ] ],
+    [ "bb1:tn.5", "pot_tds:GND", "black", [ "v-40" ] ],
+    [ "pot_tds:SIG", "uno:A0", "yellow", [ "v20", "h-360" ] ],
+
+    [ "bb1:tp.14", "pot_soil:VCC", "red", [ "v-30" ] ],
+    [ "bb1:tn.14", "pot_soil:GND", "black", [ "v-40" ] ],
+    [ "pot_soil:SIG", "uno:A1", "green", [ "v30", "h-520" ] ],
+
+    [ "bb1:tp.24", "servo_diverter:V+", "red", [ "v-20" ] ],
+    [ "bb1:tn.24", "servo_diverter:GND", "black", [ "v-30" ] ],
+    [ "uno:3", "servo_diverter:PWM", "orange", [ "v-50", "h720" ] ],
+
+    [ "uno:7", "r1:1", "blue", [ "v40", "h380" ] ],
+    [ "r1:2", "led_main_pump:A", "blue", [ "v-10" ] ],
+    [ "led_main_pump:C", "bb1:bn.6", "black", [ "v30" ] ],
+
+    [ "uno:8", "r2:1", "blue", [ "v50", "h480" ] ],
+    [ "r2:2", "led_dose_pump:A", "blue", [ "v-10" ] ],
+    [ "led_dose_pump:C", "bb1:bn.12", "black", [ "v30" ] ]
+  ],
+  "dependencies": {}
+}
