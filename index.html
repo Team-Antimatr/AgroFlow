@@ -141,16 +141,24 @@
     <!-- ======================================================================= -->
     <div id="schedules-view" class="tab-content flex flex-col gap-3.5 pb-8">
       
-      <!-- Utility Action Bar: Refresh & Live Pulse -->
-      <div class="flex items-center justify-between">
-        <button id="refresh-action-btn" type="button" 
-                class="h-9 px-4 bg-white text-[#0e730b] text-xs font-bold rounded-full flex items-center gap-1.5 shadow-sm active:scale-95 transition-all select-none">
-          <span id="refresh-icon" class="material-symbols-outlined text-[16px]">sync</span>
-          <span>REFRESH</span>
-        </button>
+      <!-- Utility Action Bar: Refresh, Bluetooth & Live Pulse -->
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button id="refresh-action-btn" type="button" 
+                  class="h-9 px-3.5 bg-white text-[#0e730b] text-xs font-bold rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-all select-none">
+            <span id="refresh-icon" class="material-symbols-outlined text-[16px]">sync</span>
+            <span>REFRESH</span>
+          </button>
+
+          <button id="open-hw-modal-btn" type="button" 
+                  class="h-9 px-3.5 bg-[#003a01] hover:bg-[#002a01] text-[#96f681] border border-[#7edc6b]/30 text-xs font-bold rounded-full flex items-center gap-1.5 shadow-sm active:scale-95 transition-all select-none">
+            <span class="material-symbols-outlined text-[16px] text-[#7edc6b]" id="hw-bt-icon">bluetooth</span>
+            <span id="hw-btn-label">CONNECT HW</span>
+          </button>
+        </div>
 
         <div class="flex items-center gap-1.5 px-3 py-1 bg-[#0b5c08] rounded-full border border-white/10 shadow-inner" title="Firebase Project: agroflow-8da1a | Site: agroflow-ai-project.web.app">
-          <span class="w-2 h-2 rounded-full bg-[#7edc6b] animate-ping"></span>
+          <span id="hw-status-dot" class="w-2 h-2 rounded-full bg-[#7edc6b] animate-ping"></span>
           <span id="firebase-sync-badge" class="text-[11px] font-bold uppercase tracking-wider text-[#96f681]">Telemetry Active</span>
         </div>
       </div>
@@ -592,6 +600,110 @@
   </main>
 
   <!-- ========================================================================= -->
+  <!-- HARDWARE LINK & BLUETOOTH / SERIAL MODAL                                   -->
+  <!-- ========================================================================= -->
+  <div id="hw-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300 hidden">
+    <div class="w-full max-w-md bg-white text-[#1d201f] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      
+      <!-- Modal Header -->
+      <div class="bg-[#0e730b] text-white p-4 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[#96f681] text-[20px]">bluetooth_connected</span>
+          </div>
+          <div>
+            <h3 class="font-extrabold text-sm leading-tight">Hardware Bridge</h3>
+            <p class="text-[11px] text-[#96f681] font-medium">Connect Arduino via Bluetooth / Serial</p>
+          </div>
+        </div>
+        <button id="close-hw-modal-btn" type="button" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-4 flex flex-col gap-3.5 overflow-y-auto">
+
+        <!-- Live Status Bar -->
+        <div id="hw-status-card" class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span id="hw-modal-status-dot" class="w-3 h-3 rounded-full bg-slate-400"></span>
+            <div>
+              <p id="hw-modal-status-title" class="text-xs font-bold text-slate-800">Hardware Disconnected</p>
+              <p id="hw-modal-status-sub" class="text-[10px] text-slate-500">Select connection mode below</p>
+            </div>
+          </div>
+          <button id="hw-disconnect-btn" type="button" class="hidden px-2.5 py-1 text-[11px] font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-full border border-red-200 transition-all">
+            Disconnect
+          </button>
+        </div>
+
+        <!-- Connection Option 1: Web Serial API (HC-05 / USB) -->
+        <div class="p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-[#0e730b]/50 transition-all shadow-sm flex flex-col gap-2">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[#0e730b] text-[22px]">cable</span>
+              <div>
+                <h4 class="text-xs font-bold text-slate-900">Serial COM Port / Paired HC-05</h4>
+                <p class="text-[11px] text-slate-500">USB cable or HC-05 Bluetooth paired in Windows</p>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 text-[9px] font-black uppercase rounded bg-[#E8F5E9] text-[#0e730b]">9600 Baud</span>
+          </div>
+          <button id="connect-serial-btn" type="button" class="w-full h-10 mt-1 bg-[#0e730b] hover:bg-[#0b5c08] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98] transition-all">
+            <span class="material-symbols-outlined text-[16px]">settings_input_composite</span>
+            <span>Select Serial / Bluetooth Port</span>
+          </button>
+        </div>
+
+        <!-- Connection Option 2: Web Bluetooth API (BLE) -->
+        <div class="p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-[#0288D1]/50 transition-all shadow-sm flex flex-col gap-2">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[#0288D1] text-[22px]">bluetooth</span>
+              <div>
+                <h4 class="text-xs font-bold text-slate-900">Wireless BLE (Bluetooth Low Energy)</h4>
+                <p class="text-[11px] text-slate-500">For ESP32 BLE / HM-10 / Nordic UART</p>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 text-[9px] font-black uppercase rounded bg-sky-50 text-sky-700">Wireless</span>
+          </div>
+          <button id="connect-ble-btn" type="button" class="w-full h-10 mt-1 bg-[#0288D1] hover:bg-[#0277bd] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98] transition-all">
+            <span class="material-symbols-outlined text-[16px]">bluetooth_searching</span>
+            <span>Scan &amp; Pair BLE Device</span>
+          </button>
+        </div>
+
+        <!-- Terminal / Serial Monitor Drawer (Collapsible) -->
+        <div class="border border-slate-200 rounded-2xl overflow-hidden bg-slate-900 text-slate-100 text-xs">
+          <div class="p-2.5 bg-slate-800 border-b border-slate-700 flex items-center justify-between">
+            <span class="font-mono text-[11px] font-bold text-slate-300 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              Live Serial Monitor
+            </span>
+            <div class="flex items-center gap-1.5">
+              <button id="clear-terminal-btn" type="button" class="text-[10px] text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-700">Clear</button>
+            </div>
+          </div>
+          <div id="hw-terminal-output" class="p-3 font-mono text-[11px] h-32 overflow-y-auto flex flex-col gap-1 text-slate-300 select-text">
+            <div class="text-slate-500 italic">// Ready. Connect to view incoming packets...</div>
+          </div>
+          
+          <!-- Command Input Row -->
+          <div class="p-2 bg-slate-800 border-t border-slate-700 flex items-center gap-1.5">
+            <input id="hw-cmd-input" type="text" placeholder="e.g. CMD:PUMP:ON or CMD:DOSE:30" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:border-[#7edc6b]"/>
+            <button id="hw-send-cmd-btn" type="button" class="px-3 py-1.5 bg-[#7edc6b] text-[#003a01] font-bold rounded-lg text-xs hover:bg-[#96f681] transition-all">
+              SEND
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
   <!-- SINGLE UNIFIED JAVASCRIPT ENGINE (TABS, MOCK DATA, COOLDOWN & DEMO)       -->
   <!-- ========================================================================= -->
   <script>
@@ -757,6 +869,303 @@
       if (btnSaline) btnSaline.addEventListener('click', () => applyDemoState(demoStates[0]));
       if (btnFresh) btnFresh.addEventListener('click', () => applyDemoState(demoStates[1]));
       if (btnDrought) btnDrought.addEventListener('click', () => applyDemoState(demoStates[2]));
+
+      // 5. HARDWARE LINK & BLUETOOTH / SERIAL BRIDGE ENGINE
+      let activePort = null;
+      let serialReader = null;
+      let serialWriter = null;
+      let bleDevice = null;
+      let bleCharacteristic = null;
+      let isHwConnected = false;
+
+      const hwModal = document.getElementById('hw-modal');
+      const openHwModalBtn = document.getElementById('open-hw-modal-btn');
+      const closeHwModalBtn = document.getElementById('close-hw-modal-btn');
+      const hwBtnLabel = document.getElementById('hw-btn-label');
+      const hwBtIcon = document.getElementById('hw-bt-icon');
+      const hwStatusDot = document.getElementById('hw-status-dot');
+      const hwModalDot = document.getElementById('hw-modal-status-dot');
+      const hwModalTitle = document.getElementById('hw-modal-status-title');
+      const hwModalSub = document.getElementById('hw-modal-status-sub');
+      const hwDisconnectBtn = document.getElementById('hw-disconnect-btn');
+      const connectSerialBtn = document.getElementById('connect-serial-btn');
+      const connectBleBtn = document.getElementById('connect-ble-btn');
+      const terminalOutput = document.getElementById('hw-terminal-output');
+      const clearTerminalBtn = document.getElementById('clear-terminal-btn');
+      const hwCmdInput = document.getElementById('hw-cmd-input');
+      const hwSendCmdBtn = document.getElementById('hw-send-cmd-btn');
+
+      // Modal Open/Close
+      if (openHwModalBtn && hwModal) {
+        openHwModalBtn.addEventListener('click', () => hwModal.classList.remove('hidden'));
+      }
+      if (closeHwModalBtn && hwModal) {
+        closeHwModalBtn.addEventListener('click', () => hwModal.classList.add('hidden'));
+      }
+      if (hwModal) {
+        hwModal.addEventListener('click', (e) => {
+          if (e.target === hwModal) hwModal.classList.add('hidden');
+        });
+      }
+
+      function logTerminal(prefix, msg, colorClass = "text-slate-300") {
+        if (!terminalOutput) return;
+        const time = new Date().toLocaleTimeString().split(' ')[0];
+        const line = document.createElement('div');
+        line.className = `leading-tight break-all ${colorClass}`;
+        line.textContent = `[${time}] ${prefix} ${msg}`;
+        terminalOutput.appendChild(line);
+        terminalOutput.scrollTop = terminalOutput.scrollHeight;
+      }
+
+      if (clearTerminalBtn && terminalOutput) {
+        clearTerminalBtn.addEventListener('click', () => {
+          terminalOutput.innerHTML = '<div class="text-slate-500 italic">// Terminal cleared. Waiting for data...</div>';
+        });
+      }
+
+      function updateHwUI(connected, label = "Connected") {
+        isHwConnected = connected;
+        if (connected) {
+          if (hwBtnLabel) hwBtnLabel.textContent = "ONLINE";
+          if (hwBtIcon) hwBtIcon.classList.add('text-[#7edc6b]');
+          if (hwStatusDot) {
+            hwStatusDot.classList.remove('bg-slate-400');
+            hwStatusDot.classList.add('bg-[#7edc6b]', 'animate-ping');
+          }
+          if (hwModalDot) {
+            hwModalDot.classList.remove('bg-slate-400');
+            hwModalDot.classList.add('bg-emerald-500', 'shadow-md');
+          }
+          if (hwModalTitle) hwModalTitle.textContent = `Online: ${label}`;
+          if (hwModalSub) hwModalSub.textContent = "Live telemetry streaming into dashboard";
+          if (hwDisconnectBtn) hwDisconnectBtn.classList.remove('hidden');
+        } else {
+          if (hwBtnLabel) hwBtnLabel.textContent = "CONNECT HW";
+          if (hwStatusDot) {
+            hwStatusDot.classList.remove('bg-[#7edc6b]', 'animate-ping');
+            hwStatusDot.classList.add('bg-slate-400');
+          }
+          if (hwModalDot) {
+            hwModalDot.classList.remove('bg-emerald-500', 'shadow-md');
+            hwModalDot.classList.add('bg-slate-400');
+          }
+          if (hwModalTitle) hwModalTitle.textContent = "Hardware Disconnected";
+          if (hwModalSub) hwModalSub.textContent = "Select Serial COM port or BLE device";
+          if (hwDisconnectBtn) hwDisconnectBtn.classList.add('hidden');
+        }
+      }
+
+      function handleTelemetryPacket(rawText) {
+        try {
+          const data = JSON.parse(rawText);
+          logTerminal("RX JSON", JSON.stringify(data), "text-emerald-400");
+
+          if (data.tds !== undefined) {
+            const aquaTdsVal = document.getElementById('aquatds-tds-val');
+            const demoTdsVal = document.getElementById('demo-ppm-val');
+            if (aquaTdsVal) aquaTdsVal.textContent = data.tds + ' ppm';
+            if (demoTdsVal) demoTdsVal.textContent = data.tds;
+          }
+
+          if (data.moisture !== undefined || data.soil !== undefined) {
+            const m = data.moisture !== undefined ? data.moisture : data.soil;
+            const moistureDisplay = document.getElementById('moisture-display');
+            const moistureProgressBar = document.getElementById('moisture-progress-bar');
+            const aquaSoilVal = document.getElementById('aquatds-soil-val');
+            const demoSoilVal = document.getElementById('demo-soil-val');
+            if (moistureDisplay) moistureDisplay.textContent = m + '%';
+            if (moistureProgressBar) moistureProgressBar.style.width = Math.min(100, m) + '%';
+            if (aquaSoilVal) aquaSoilVal.textContent = m + '%';
+            if (demoSoilVal) demoSoilVal.textContent = m + '%';
+          }
+
+          if (data.flow !== undefined) {
+            const aquaFlowVal = document.getElementById('aquatds-flow-val');
+            const demoFlowVal = document.getElementById('demo-flow-val');
+            if (aquaFlowVal) aquaFlowVal.textContent = data.flow + ' L/s';
+            if (demoFlowVal) demoFlowVal.textContent = data.flow;
+          }
+
+          // Dynamic AI Agronomist interpretation
+          const aiText = document.getElementById('ai-summary-text');
+          if (aiText && (data.tds !== undefined || data.moisture !== undefined)) {
+            const tds = data.tds || 450;
+            const moist = data.moisture || 35;
+            if (tds > 500) {
+              aiText.textContent = `"Live Impurity Alert: Salinity is elevated (${tds} ppm). System has automatically diverted water through the bio-filter bed (Servo 90°). Soil moisture is ${moist}%. Nutrients will mix once water purity normalizes."`;
+            } else {
+              aiText.textContent = `"Optimal Source Quality: Water TDS is pure (${tds} ppm). Diverter valve set to clean bypass (0°). Soil moisture is ${moist}%. Precision fertigation active."`;
+            }
+          }
+
+          const fbBadge = document.getElementById('firebase-sync-badge');
+          if (fbBadge && data.tds !== undefined) {
+            fbBadge.textContent = `LIVE: ${data.tds} ppm | ${data.moisture || '--'}%`;
+          }
+        } catch (e) {
+          logTerminal("RX RAW", rawText, "text-sky-300");
+        }
+      }
+
+      window.sendHardwareCommand = async function (cmd) {
+        const payload = cmd.endsWith('\n') ? cmd : (cmd + '\n');
+        logTerminal("TX", payload.trim(), "text-amber-300 font-bold");
+
+        if (serialWriter) {
+          try {
+            const encoder = new TextEncoder();
+            await serialWriter.write(encoder.encode(payload));
+          } catch (e) {
+            logTerminal("ERR TX", e.message, "text-red-400");
+          }
+        } else if (bleCharacteristic) {
+          try {
+            const encoder = new TextEncoder();
+            await bleCharacteristic.writeValue(encoder.encode(payload));
+          } catch (e) {
+            logTerminal("ERR TX", e.message, "text-red-400");
+          }
+        } else {
+          logTerminal("INFO", `[Simulated TX] ${payload.trim()} (Connect hardware for real transmission)`, "text-slate-400");
+        }
+      };
+
+      // Connect Web Serial (HC-05 or USB)
+      if (connectSerialBtn) {
+        connectSerialBtn.addEventListener('click', async () => {
+          if (!("serial" in navigator)) {
+            alert("Web Serial API is supported in Google Chrome, Microsoft Edge, and Opera (PC / Android OTG). Please open in Chrome!");
+            return;
+          }
+          try {
+            logTerminal("SYS", "Prompting user for Serial COM port...", "text-sky-300");
+            const port = await navigator.serial.requestPort();
+            await port.open({ baudRate: 9600 });
+            activePort = port;
+            serialWriter = port.writable.getWriter();
+            updateHwUI(true, "Serial COM (9600)");
+            logTerminal("SYS", "Connected to Serial port at 9600 baud!", "text-emerald-400");
+
+            const decoder = new TextDecoderStream();
+            port.readable.pipeTo(decoder.writable);
+            const reader = decoder.readable.getReader();
+            serialReader = reader;
+
+            let buffer = "";
+            while (true) {
+              const { value, done } = await reader.read();
+              if (done) break;
+              if (value) {
+                buffer += value;
+                const lines = buffer.split("\n");
+                buffer = lines.pop();
+                for (const line of lines) {
+                  const trimmed = line.trim();
+                  if (trimmed.length > 0) handleTelemetryPacket(trimmed);
+                }
+              }
+            }
+          } catch (err) {
+            console.error("Serial error:", err);
+            logTerminal("ERR", err.message || "Port selection cancelled", "text-red-400");
+            updateHwUI(false);
+          }
+        });
+      }
+
+      // Connect Web Bluetooth (BLE)
+      if (connectBleBtn) {
+        connectBleBtn.addEventListener('click', async () => {
+          if (!("bluetooth" in navigator)) {
+            alert("Web Bluetooth API is supported in Chrome/Edge on Android, Mac, Windows. Please use Chrome!");
+            return;
+          }
+          try {
+            logTerminal("SYS", "Scanning for Bluetooth devices...", "text-sky-300");
+            const device = await navigator.bluetooth.requestDevice({
+              acceptAllDevices: true,
+              optionalServices: [
+                '0000ffe0-0000-1000-8000-00805f9b34fb',
+                '6e400001-b5a3-f393-e0a9-e50e24dcca9e'
+              ]
+            });
+            bleDevice = device;
+            logTerminal("SYS", `Connecting GATT to ${device.name || 'Device'}...`, "text-sky-300");
+            const server = await device.gatt.connect();
+
+            let uartService = null;
+            try {
+              uartService = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
+            } catch (e) {
+              uartService = await server.getPrimaryService('6e400001-b5a3-f393-e0a9-e50e24dcca9e');
+            }
+
+            const chars = await uartService.getCharacteristics();
+            bleCharacteristic = chars[0];
+            await bleCharacteristic.startNotifications();
+            bleCharacteristic.addEventListener('characteristicvaluechanged', (event) => {
+              const val = new TextDecoder().decode(event.target.value);
+              handleTelemetryPacket(val.trim());
+            });
+
+            updateHwUI(true, `BLE: ${device.name || 'AgroFlow'}`);
+            logTerminal("SYS", `BLE Paired: ${device.name || 'AgroFlow'}`, "text-emerald-400");
+          } catch (err) {
+            console.error("BLE error:", err);
+            logTerminal("ERR", err.message || "BLE cancelled", "text-red-400");
+            updateHwUI(false);
+          }
+        });
+      }
+
+      // Disconnect Action
+      if (hwDisconnectBtn) {
+        hwDisconnectBtn.addEventListener('click', async () => {
+          try {
+            if (serialReader) { await serialReader.cancel(); serialReader = null; }
+            if (serialWriter) { await serialWriter.close(); serialWriter = null; }
+            if (activePort) { await activePort.close(); activePort = null; }
+            if (bleDevice && bleDevice.gatt && bleDevice.gatt.connected) {
+              bleDevice.gatt.disconnect();
+              bleDevice = null;
+              bleCharacteristic = null;
+            }
+            updateHwUI(false);
+            logTerminal("SYS", "Hardware disconnected.", "text-amber-400");
+          } catch (e) {
+            console.warn("Disconnect error:", e);
+          }
+        });
+      }
+
+      // Manual Command Sender
+      if (hwSendCmdBtn && hwCmdInput) {
+        hwSendCmdBtn.addEventListener('click', () => {
+          const val = hwCmdInput.value.trim();
+          if (val) {
+            window.sendHardwareCommand(val);
+            hwCmdInput.value = '';
+          }
+        });
+        hwCmdInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            const val = hwCmdInput.value.trim();
+            if (val) {
+              window.sendHardwareCommand(val);
+              hwCmdInput.value = '';
+            }
+          }
+        });
+      }
+
+      // Wire Tab 1 Buttons to transmit commands
+      if (startBtn) {
+        startBtn.addEventListener('click', () => window.sendHardwareCommand('CMD:PUMP:ON'));
+      }
+      if (endBtn) {
+        endBtn.addEventListener('click', () => window.sendHardwareCommand('CMD:PUMP:OFF'));
+      }
 
     })();
   </script>
