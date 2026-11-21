@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+  <meta content="mobile_tab" name="shell-type"/>
+  <title>AquaFlow AI — Smart Water Filtration & Precision Fertigation</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#7edc6b",
+            "primary-container": "#0e730b",
+            "on-primary": "#003a01",
+            "on-primary-container": "#96f681",
+            "surface": "#0e730b",
+            "on-surface": "#ffffff",
+            "surface-container": "#1d201f",
+            "surface-container-highest": "#323534",
+            "surface-card": "#ffffff",
+            "text-dark": "#0e730b",
+            "text-muted": "#616161",
+            "accent-blue": "#0288D1",
+            "alert-red": "#D32F2F",
+            "warning-amber": "#FBC02D",
+            "soil-brown": "#6D4C41"
+          },
+          fontFamily: {
+            sans: ["Google Sans Flex", "Inter", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    @layer base {
+      html, body {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #0e730b;
+        color: #ffffff;
+        overscroll-behavior: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .pb-safe { padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 16px)); }
+      .pt-safe { padding-top: max(0.5rem, env(safe-area-inset-top, 8px)); }
+    }
+    ::-webkit-scrollbar { display: none; }
+    
+    .tab-content {
+      animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .active-nav-tab {
+      color: #ffffff !important;
+      font-weight: 700 !important;
+      position: relative;
+    }
+    .active-nav-tab::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background-color: #ffffff;
+      border-radius: 3px 3px 0 0;
+    }
+  </style>
+</head>
+
+<body class="bg-surface font-sans text-on-surface flex flex-col min-h-screen">
+
+  <!-- ========================================================================= -->
+  <!-- FIXED TOP HEADER WITH APP SHELL & 3 NAVIGATION TABS                      -->
+  <!-- ========================================================================= -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-[#0b6309] shadow-md pt-safe">
+    <div class="max-w-md mx-auto px-4 flex flex-col justify-between h-[116px]">
+      
+      <!-- Top Branding Row -->
+      <div class="flex items-center justify-between pt-2">
+        <div class="flex flex-col">
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl font-extrabold tracking-tight text-white leading-none">AgroFlow AI</h1>
+            <span class="bg-[#7edc6b] text-[#003a01] text-[10px] font-black uppercase px-1.5 py-0.5 rounded tracking-wide">PRO</span>
+          </div>
+          <p class="text-xs text-[#96f681] font-medium mt-1">Smart Water Filtration &amp; Precision Fertigation</p>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-[#7edc6b] flex items-center justify-center shrink-0 shadow-inner">
+          <span class="material-symbols-outlined text-[#003a01] text-[18px]">psychology</span>
+        </div>
+      </div>
+
+      <!-- 3 Main Navigation Tabs -->
+      <nav class="flex items-end justify-between h-11 border-b border-white/10" id="main-nav">
+        <!-- Tab 1: Schedules -->
+        <button type="button" data-tab-target="schedules-view" 
+                class="tab-btn active-nav-tab relative flex items-center justify-center h-full px-3 text-xs tracking-wider uppercase transition-all text-white font-bold select-none focus:outline-none">
+          <span class="pb-2">Schedules</span>
+        </button>
+
+        <!-- Tab 2: AquaTDS -->
+        <button type="button" data-tab-target="aquatds-view" 
+                class="tab-btn relative flex items-center justify-center gap-1 h-full px-3 text-xs tracking-wider uppercase transition-all text-[#96f681]/80 select-none focus:outline-none">
+          <span class="pb-2 flex items-center gap-1">
+            AquaTDS
+            <span class="material-symbols-outlined text-[#FBC02D] text-[15px]">auto_awesome</span>
+          </span>
+        </button>
+
+        <!-- Tab 3: Demo -->
+        <button type="button" data-tab-target="demo-view" 
+                class="tab-btn relative flex items-center justify-center h-full px-3 text-xs tracking-wider uppercase transition-all text-[#96f681]/80 select-none focus:outline-none">
+          <span class="pb-2">Demo</span>
+        </button>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN SCROLLABLE CONTAINER (PADDING OPTIMIZED TO PREVENT CLIPPING)         -->
+  <!-- ========================================================================= -->
+  <main class="flex-1 w-full max-w-md mx-auto px-4 pt-[132px] pb-safe">
+
+    <!-- ======================================================================= -->
+    <!-- TAB 1 VIEW: SCHEDULES & IRRIGATION CONTROL                              -->
+    <!-- ======================================================================= -->
+    <div id="schedules-view" class="tab-content flex flex-col gap-3.5 pb-8">
+      
+      <!-- Utility Action Bar: Refresh & Live Pulse -->
+      <div class="flex items-center justify-between">
+        <button id="refresh-action-btn" type="button" 
+                class="h-9 px-4 bg-white text-[#0e730b] text-xs font-bold rounded-full flex items-center gap-1.5 shadow-sm active:scale-95 transition-all select-none">
+          <span id="refresh-icon" class="material-symbols-outlined text-[16px]">sync</span>
+          <span>REFRESH</span>
+        </button>
+
+        <div class="flex items-center gap-1.5 px-3 py-1 bg-[#0b5c08] rounded-full border border-white/10 shadow-inner">
+          <span class="w-2 h-2 rounded-full bg-[#7edc6b] animate-ping"></span>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-[#96f681]">Telemetry Active</span>
+        </div>
+      </div>
+
+      <!-- Custom Schedules Banner Card -->
+      <div class="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center justify-between">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-[#E8F5E9] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[#0e730b] text-[22px]">calendar_month</span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <h2 class="text-sm font-bold text-[#0e730b] leading-tight truncate">Custom Schedules</h2>
+            <span class="text-xs text-[#616161]">Agronomic sequence profiles</span>
+          </div>
+        </div>
+        <button id="custom-modal-btn" type="button" 
+                class="shrink-0 px-3.5 py-1.5 bg-[#0e730b] text-white text-xs font-bold rounded-lg uppercase tracking-wider shadow active:opacity-85 transition-opacity">
+          Custom
+        </button>
+      </div>
+
+      <!-- Main Schedule Irrigation Execution Card (Cycle A) -->
+      <div class="w-full bg-white rounded-2xl p-4 shadow-md flex flex-col gap-3">
+        
+        <!-- Slot Time & Trigger Buttons -->
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-col">
+            <div class="flex items-center gap-2">
+              <span class="text-2xl font-black text-[#0e730b] leading-none tracking-tight">9-10 AM</span>
+              <span class="px-2 py-0.5 rounded-full bg-[#E8F5E9] text-[#0e730b] text-[10px] font-bold uppercase tracking-wider">Cycle A</span>
+            </div>
+            <p class="text-xs text-[#616161] font-medium mt-1 flex items-center gap-1">
+              <span class="material-symbols-outlined text-[14px] text-[#0e730b]">water_pump</span>
+              Submersible Lift Pump &bull; Zone 1
+            </p>
+          </div>
+
+          <!-- START & END Action Buttons -->
+          <div class="flex items-center gap-2 shrink-0">
+            <button id="start-btn" type="button"
+                    class="w-12 h-12 bg-[#0e730b] text-white text-[11px] font-bold uppercase rounded-xl flex flex-col items-center justify-center gap-0.5 shadow transition-all active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">play_arrow</span>
+              <span>Start</span>
+            </button>
+            <button id="end-btn" type="button"
+                    class="w-12 h-12 bg-[#EEEEEE] text-[#616161] text-[11px] font-bold uppercase rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all opacity-80 active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">stop</span>
+              <span>End</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Cooldown / Active Status Notice (Hidden by default) -->
+        <div id="cooldown-pill" class="hidden w-full bg-[#FFF8E1] border border-[#FFE082] rounded-lg px-3 py-1.5 flex items-center justify-between text-xs text-[#B45309] font-bold">
+          <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">timer</span> Safety Cooldown:</span>
+          <span id="cooldown-timer">10s</span>
+        </div>
+
+        <!-- Divider Line -->
+        <div class="w-full h-px bg-gray-100"></div>
+
+        <!-- Soil Moisture Reading & Progress -->
+        <div class="flex flex-col gap-1.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[#0e730b] text-[18px]">water_drop</span>
+              <span class="text-xs font-bold text-[#0e730b] uppercase tracking-wide">Soil Moisture</span>
+            </div>
+            <div class="flex items-baseline gap-1.5">
+              <span id="moisture-display" class="text-2xl font-black text-[#0e730b] tracking-tight">28%</span>
+              <span class="text-[10px] font-bold text-[#616161] uppercase">Target: 45%</span>
+            </div>
+          </div>
+
+          <div class="w-full bg-[#F5F5F5] h-2.5 rounded-full overflow-hidden flex shadow-inner">
+            <div id="moisture-progress-bar" class="bg-[#0e730b] h-full rounded-full transition-all duration-700" style="width: 28%;"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Operational Flow Card / Field Telemetry Companion -->
+      <div class="w-full bg-white rounded-2xl p-4 shadow-sm flex flex-col gap-2.5">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0e730b]">Zone 01 &bull; Fertigation Line</span>
+          <span class="px-2 py-0.5 rounded-full bg-[#E8F5E9] text-[#0e730b] text-[10px] font-extrabold uppercase">Auto Mode</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 mt-1">
+          <div class="bg-[#F8FAF8] p-3 rounded-xl flex flex-col border border-gray-100">
+            <span class="text-[10px] font-bold text-[#616161] uppercase tracking-wider">Flow Volume</span>
+            <span class="text-base font-extrabold text-[#0e730b] mt-0.5">1,420 <span class="text-xs font-normal text-gray-500">L/h</span></span>
+          </div>
+          <div class="bg-[#F8FAF8] p-3 rounded-xl flex flex-col border border-gray-100">
+            <span class="text-[10px] font-bold text-[#616161] uppercase tracking-wider">Line Pressure</span>
+            <span class="text-base font-extrabold text-[#0e730b] mt-0.5">2.4 <span class="text-xs font-normal text-gray-500">BAR</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Secondary Queued Schedule Block -->
+      <div class="w-full bg-white rounded-2xl p-4 shadow-sm flex flex-col gap-1.5">
+        <div class="flex items-start justify-between">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-bold text-[#0e730b]">2:00 - 2:30 PM</span>
+              <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-[10px] font-bold uppercase">Queued</span>
+            </div>
+            <p class="text-xs text-[#616161] mt-0.5">Nutrient Dosing Injection &bull; Channel B</p>
+          </div>
+          <div class="px-2.5 py-1 bg-[#E8F5E9] rounded-lg text-[10px] text-[#0e730b] font-black tracking-wide">
+            IN 4H 15M
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 2 VIEW: AQUATDS LIVE TELEMETRY & DIAGNOSTIC DASHBOARD               -->
+    <!-- ======================================================================= -->
+    <div id="aquatds-view" class="tab-content hidden flex flex-col gap-3.5 pb-8">
+      
+      <!-- Connectivity Status Pills -->
+      <section class="grid grid-cols-2 gap-2.5">
+        <!-- Bluetooth Pill -->
+        <div class="bg-white rounded-2xl px-3.5 py-2.5 flex items-center gap-2.5 shadow-sm">
+          <div class="w-8 h-8 rounded-full bg-[#E8F5E9] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[#0E730B] text-[18px]">bluetooth</span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="text-xs font-bold text-[#0E730B] leading-tight truncate">Bluetooth</span>
+            <span class="text-[11px] text-[#0E730B] font-semibold opacity-90">HC-05 Online</span>
+          </div>
+        </div>
+
+        <!-- Firebase Cloud Sync Pill -->
+        <div class="bg-white rounded-2xl px-3.5 py-2.5 flex items-center gap-2.5 shadow-sm">
+          <div class="w-8 h-8 rounded-full bg-[#F4F6F4] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[#111413] text-[18px]">cloud_sync</span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="text-xs font-bold text-[#0E730B] leading-tight truncate">Firebase</span>
+            <span class="text-[11px] text-[#0E730B] font-semibold opacity-90">Synced</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3-Column Telemetry Gauges Grid -->
+      <section class="grid grid-cols-3 gap-2">
+        
+        <!-- Column 1: TDS Metric -->
+        <div class="flex flex-col items-center">
+          <div class="w-full bg-white rounded-2xl p-2.5 flex flex-col items-center justify-between aspect-square shadow-sm">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#616161]">TDS Meter</span>
+            
+            <!-- Semi-circle Gauge SVG pointing right -->
+            <div class="w-14 h-9 relative flex items-center justify-center">
+              <svg class="w-full h-full overflow-visible" viewBox="0 0 100 50">
+                <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#E0E0E0" stroke-linecap="round" stroke-width="8"></path>
+                <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#D32F2F" stroke-dasharray="125.6" stroke-dashoffset="25" stroke-linecap="round" stroke-width="8"></path>
+                <line stroke="#D32F2F" stroke-linecap="round" stroke-width="4" x1="50" x2="80" y1="50" y2="24"></line>
+                <circle cx="50" cy="50" fill="#D32F2F" r="5"></circle>
+              </svg>
+            </div>
+            
+            <div class="text-center leading-none">
+              <span id="aquatds-tds-val" class="text-sm font-black text-[#D32F2F] tracking-tight block">880 ppm</span>
+              <span class="text-[9px] font-bold text-[#D32F2F] uppercase">High Salinity</span>
+            </div>
+          </div>
+          <span class="text-[11px] text-white text-center mt-1.5 font-bold tracking-tight">Purity &amp; Salinity</span>
+        </div>
+
+        <!-- Column 2: Water Flow Rate -->
+        <div class="flex flex-col items-center">
+          <div class="w-full bg-white rounded-2xl p-2.5 flex flex-col items-center justify-between aspect-square shadow-sm">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#616161]">Flow Meter</span>
+            
+            <div class="flex items-center justify-center gap-0.5 my-auto">
+              <div class="w-7 h-7 rounded-full bg-[#0288D1] flex items-center justify-center shadow">
+                <span class="material-symbols-outlined text-white text-[16px]">waves</span>
+              </div>
+              <div class="w-6 h-6 rounded-full bg-[#B3E5FC] flex items-center justify-center -ml-2">
+                <span class="material-symbols-outlined text-[#0288D1] text-[14px]">water_drop</span>
+              </div>
+            </div>
+
+            <div class="flex flex-col items-center text-center leading-none">
+              <span class="text-[9px] text-[#0288D1] uppercase tracking-wider font-extrabold">Filtering</span>
+              <span id="aquatds-flow-val" class="text-sm font-black text-[#0288D1] mt-0.5 tracking-tight">1.8 L/s</span>
+            </div>
+          </div>
+          <span class="text-[11px] text-white text-center mt-1.5 font-bold tracking-tight">Flow Rate</span>
+        </div>
+
+        <!-- Column 3: Soil Hydration -->
+        <div class="flex flex-col items-center">
+          <div class="w-full bg-white rounded-2xl p-2.5 flex flex-col items-center justify-between aspect-square shadow-sm">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#616161]">Moisture</span>
+            
+            <!-- Segmented Brown Gauge -->
+            <div class="w-14 h-9 relative flex items-center justify-center">
+              <svg class="w-full h-full overflow-visible" viewBox="0 0 100 50">
+                <path d="M 10 50 A 40 40 0 0 1 30 20" fill="none" stroke="#6D4C41" stroke-linecap="round" stroke-width="8"></path>
+                <path d="M 38 14 A 40 40 0 0 1 62 14" fill="none" stroke="#D7CCC8" stroke-linecap="round" stroke-width="8"></path>
+                <path d="M 70 20 A 40 40 0 0 1 90 50" fill="none" stroke="#EFEBE9" stroke-linecap="round" stroke-width="8"></path>
+                <line stroke="#6D4C41" stroke-linecap="round" stroke-width="4" x1="50" x2="24" y1="50" y2="28"></line>
+                <circle cx="50" cy="50" fill="#6D4C41" r="5"></circle>
+              </svg>
+            </div>
+
+            <div class="flex flex-col items-center text-center leading-none">
+              <span id="aquatds-soil-status" class="text-[9px] text-[#6D4C41] uppercase tracking-wider font-extrabold">Dry</span>
+              <span id="aquatds-soil-val" class="text-sm font-black text-[#6D4C41] mt-0.5 tracking-tight">28%</span>
+            </div>
+          </div>
+          <span class="text-[11px] text-white text-center mt-1.5 font-bold tracking-tight">Soil Hydration</span>
+        </div>
+
+      </section>
+
+      <!-- AI Summary Telemetry Block (Haiku AI Integration) -->
+      <section class="flex flex-col gap-2">
+        <div class="flex items-center justify-between px-1">
+          <div class="flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[#7edc6b] text-[18px]">auto_awesome</span>
+            <h2 class="text-xs font-bold text-white uppercase tracking-wider">AI Agronomist Summary</h2>
+          </div>
+          <span class="text-[10px] text-[#96f681] font-bold uppercase">Haiku 5.5 Inferred</span>
+        </div>
+
+        <div class="w-full bg-white rounded-2xl p-4 shadow-sm flex flex-col gap-2">
+          <p id="ai-summary-text" class="text-xs text-[#0e730b] leading-relaxed font-medium">
+            "Source water salinity is elevated (880 ppm). System has automatically routed water through the charcoal-sand bio-filter before mixing liquid nutrients. Soil moisture is at 28%; current cycle will restore optimal hydration in 45 seconds without salt buildup."
+          </p>
+          <div class="flex items-center justify-between pt-1 border-t border-gray-100 text-[10px] text-gray-500 font-semibold">
+            <span>Slot: Evening 05:30 PM (Auto-Adjusted)</span>
+            <span class="text-[#0e730b] font-bold">Safe &bull; Active</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hardware Actuator Status Stack -->
+      <section class="flex flex-col gap-2">
+        <div class="px-1">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-white/90">Hardware Mechanism Signals</span>
+        </div>
+
+        <!-- Actuator 1: Servo Motor -->
+        <div class="w-full bg-white rounded-2xl px-4 py-3 flex items-center justify-between shadow-sm">
+          <div class="flex items-center gap-2.5">
+            <span class="material-symbols-outlined text-[#0E730B] text-[20px]">precision_manufacturing</span>
+            <div class="flex flex-col">
+              <span class="text-xs font-bold text-[#0E730B]">Servo Diverter Valve</span>
+              <span class="text-[10px] text-gray-500">Pin 3 PWM &bull; Divert to Filter</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 bg-[#E1F5FE] px-2.5 py-1 rounded-full">
+            <div class="w-2 h-2 rounded-full bg-[#0288D1] animate-pulse"></div>
+            <span class="text-[10px] font-extrabold text-[#0288D1] uppercase tracking-wider">90&deg; Open</span>
+          </div>
+        </div>
+
+        <!-- Actuator 2: Main Pump -->
+        <div class="w-full bg-white rounded-2xl px-4 py-3 flex items-center justify-between shadow-sm">
+          <div class="flex items-center gap-2.5">
+            <span class="material-symbols-outlined text-[#0E730B] text-[20px]">water_pump</span>
+            <div class="flex flex-col">
+              <span class="text-xs font-bold text-[#0E730B]">Main Lift Pump</span>
+              <span class="text-[10px] text-gray-500">Relay 1 &bull; Pin 7 Active</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 bg-[#E1F5FE] px-2.5 py-1 rounded-full">
+            <div class="w-2 h-2 rounded-full bg-[#0288D1] animate-pulse"></div>
+            <span class="text-[10px] font-extrabold text-[#0288D1] uppercase tracking-wider">Running</span>
+          </div>
+        </div>
+
+        <!-- Actuator 3: Fertigation System -->
+        <div class="w-full bg-white rounded-2xl px-4 py-3 flex items-center justify-between shadow-sm">
+          <div class="flex items-center gap-2.5">
+            <span class="material-symbols-outlined text-[#0E730B] text-[20px]">science</span>
+            <div class="flex flex-col">
+              <span class="text-xs font-bold text-[#0E730B]">Fertigation Pump</span>
+              <span class="text-[10px] text-gray-500">Relay 2 &bull; Pin 8 Dosing</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 bg-[#E8F5E9] px-2.5 py-1 rounded-full">
+            <div class="w-2 h-2 rounded-full bg-[#0E730B] animate-pulse"></div>
+            <span class="text-[10px] font-extrabold text-[#0E730B] uppercase tracking-wider">Dosing 30mL</span>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 3 VIEW: DEMO & EXHIBITION SANDBOX                                   -->
+    <!-- ======================================================================= -->
+    <div id="demo-view" class="tab-content hidden flex flex-col gap-3.5 pb-8">
+      
+      <!-- Live Simulation Mode Notice Banner -->
+      <div class="flex items-center justify-between bg-white rounded-2xl px-4 py-2.5 shadow-sm">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#7CB342] shrink-0 animate-ping"></span>
+          <span class="text-xs font-bold text-[#0E730B] uppercase tracking-wider truncate">Simulation Stream</span>
+        </div>
+        <span class="text-[10px] bg-[#E8F5E9] text-[#0E730B] px-2.5 py-0.5 rounded-full font-black">VIRTUAL RIG 01</span>
+      </div>
+
+      <!-- Connectivity Pills in Demo -->
+      <div class="grid grid-cols-2 gap-2.5">
+        <div class="bg-white rounded-2xl h-11 px-3.5 flex items-center justify-between shadow-sm">
+          <div class="flex items-center gap-1.5 min-w-0">
+            <span class="material-symbols-outlined text-[#7CB342] text-[18px]">bluetooth</span>
+            <span class="text-xs font-bold text-[#0E730B] truncate">Bluetooth</span>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <span class="w-2 h-2 rounded-full bg-[#7CB342]"></span>
+            <span class="text-[10px] font-bold text-[#7CB342] uppercase">Virtual</span>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl h-11 px-3.5 flex items-center justify-between shadow-sm">
+          <div class="flex items-center gap-1.5 min-w-0">
+            <span class="material-symbols-outlined text-[#111413] text-[18px]">sync</span>
+            <span class="text-xs font-bold text-[#0E730B] truncate">Firebase</span>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <span class="material-symbols-outlined text-[#111413] text-[15px]">sensors</span>
+            <span class="text-[10px] font-bold text-[#111413] uppercase">Sync</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-Column Telemetry Gauges in Demo -->
+      <div class="grid grid-cols-3 gap-2">
+        <!-- Card 1: Purity -->
+        <div class="flex flex-col items-center">
+          <div class="w-full bg-white rounded-2xl p-2.5 flex flex-col items-center justify-between aspect-square shadow-sm">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#616161]">TDS Meter</span>
+            
+            <div class="relative w-16 h-10 mt-1 flex items-end justify-center">
+              <svg class="w-full h-full overflow-visible" viewBox="0 0 100 55">
+                <path d="M 10 50 A 40 40 0 0 1 35 15" fill="none" stroke="#7CB342" stroke-linecap="round" stroke-width="8"></path>
+                <path d="M 40 13 A 40 40 0 0 1 65 14" fill="none" stroke="#FBC02D" stroke-linecap="round" stroke-width="8"></path>
+                <path d="M 70 17 A 40 40 0 0 1 90 50" fill="none" stroke="#D32F2F" stroke-linecap="round" stroke-width="8"></path>
+                <line id="demo-needle-tds" stroke="#D32F2F" stroke-linecap="round" stroke-width="3.5" x1="50" x2="80" y1="50" y2="28"></line>
+                <circle cx="50" cy="50" fill="#D32F2F" r="5"></circle>
+              </svg>
+            </div>
+            
+            <div class="text-center w-full">
+              <div id="demo-ppm-val" class="text-sm font-black text-[#D32F2F] leading-tight">880</div>
+              <div class="text-[9px] font-bold text-[#D32F2F] tracking-tight">ppm</div>
+            </div>
+          </div>
+          <span class="text-[11px] text-white text-center mt-1.5 font-bold tracking-tight">Purity &amp; Salinity</span>
+        </div>
+
+        <!-- Card 2: Flow Rate -->
+        <div class="flex flex-col items-center">
+          <div class="w-full bg-white rounded-2xl p-2.5 flex flex-col items-center justify-between aspect-square shadow-sm">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#616161]">Flow Meter</span>
+            
+            <div class="flex items-center justify-center gap-1 text-[#0288D1] my-auto">
+              <span class="material-symbols-outlined text-[18px]">water</span>
+              <span class="material-symbols-outlined text-[18px]">waves</span>
+            </div>
+
+            <div class="text-center w-full">
+              <span class="text-[9px] font-extrabold text-[#0288D1] uppercase tracking-wider block">Filtering</span>
+              <div id="demo-flow-val" class="text-sm font-black text-[#0288D1] leading-tight mt-0.5">1.8</div>
+              <span class="text-[9px] font-bold text-[#0288D1] tracking-tight block">L/s</span>
+            </div>
+          </div>
+          <span class="text-[11px] text-white text-center mt-1.5 font-bold tracking-tight">Flow Rate</span>
+        </div>
+
+        <!-- Card 3: Soil Hydration -->
+        <div class="flex flex-col items-center">
+          <div class="w-full bg-white rounded-2xl p-2.5 flex flex-col items-center justify-between aspect-square shadow-sm">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#616161]">Moisture</span>
+            
+            <div class="relative w-16 h-10 mt-1 flex items-end justify-center">
+              <svg class="w-full h-full overflow-visible" viewBox="0 0 100 55">
+                <path d="M 12 50 A 40 40 0 0 1 32 20" fill="none" stroke="#6D4C41" stroke-linecap="round" stroke-width="8"></path>
+                <path d="M 40 14 A 40 40 0 0 1 60 14" fill="none" stroke="#D7CCC8" stroke-linecap="round" stroke-width="8"></path>
+                <path d="M 68 20 A 40 40 0 0 1 88 50" fill="none" stroke="#D7CCC8" stroke-linecap="round" stroke-width="8"></path>
+                <line stroke="#6D4C41" stroke-linecap="round" stroke-width="3.5" x1="50" x2="22" y1="50" y2="30"></line>
+                <circle cx="50" cy="50" fill="#6D4C41" r="5"></circle>
+              </svg>
+            </div>
+
+            <div class="text-center w-full">
+              <span id="demo-soil-status" class="text-[9px] font-extrabold text-[#6D4C41] uppercase tracking-wider block">Dry</span>
+              <div id="demo-soil-val" class="text-sm font-black text-[#6D4C41] leading-tight mt-0.5">28%</div>
+              <span class="text-[9px] font-bold text-[#6D4C41] tracking-tight block">VWC</span>
+            </div>
+          </div>
+          <span class="text-[11px] text-white text-center mt-1.5 font-bold tracking-tight">Soil Hydration</span>
+        </div>
+      </div>
+
+      <!-- Demo Scenario Quick Switchers for Exhibition Judges -->
+      <div class="w-full bg-white rounded-2xl p-3.5 shadow-sm flex flex-col gap-2">
+        <span class="text-xs font-bold text-[#0E730B] uppercase tracking-wider flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">tune</span>
+          Exhibition Test Scenarios:
+        </span>
+        <div class="grid grid-cols-3 gap-1.5">
+          <button id="scenario-saline-btn" type="button" 
+                  class="scenario-btn px-2 py-1.5 bg-[#D32F2F] text-white text-[10px] font-bold rounded-lg uppercase tracking-tight shadow active:opacity-80">
+            Saline (880ppm)
+          </button>
+          <button id="scenario-fresh-btn" type="button" 
+                  class="scenario-btn px-2 py-1.5 bg-gray-100 text-gray-700 text-[10px] font-bold rounded-lg uppercase tracking-tight active:opacity-80">
+            Clean (180ppm)
+          </button>
+          <button id="scenario-drought-btn" type="button" 
+                  class="scenario-btn px-2 py-1.5 bg-gray-100 text-gray-700 text-[10px] font-bold rounded-lg uppercase tracking-tight active:opacity-80">
+            Drought (12%)
+          </button>
+        </div>
+      </div>
+
+      <!-- Single Interactive Cycle Trigger Button -->
+      <div class="flex justify-center pt-1">
+        <button id="cycleDemoStateBtn" type="button"
+                class="bg-white text-[#0E730B] px-5 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wider flex items-center gap-2 shadow-md active:scale-95 transition-all">
+          <span class="material-symbols-outlined text-[18px]">touch_app</span>
+          <span>Cycle Next State</span>
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- SINGLE UNIFIED JAVASCRIPT ENGINE (TABS, MOCK DATA, COOLDOWN & DEMO)       -->
+  <!-- ========================================================================= -->
+  <script>
+    (function () {
+      // 1. TAB SWITCHING LOGIC
+      const tabButtons = document.querySelectorAll('#main-nav .tab-btn');
+      const tabContents = document.querySelectorAll('.tab-content');
+
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-tab-target');
+
+          // Update active styles on buttons
+          tabButtons.forEach(b => {
+            b.classList.remove('active-nav-tab', 'text-white', 'font-bold');
+            b.classList.add('text-[#96f681]/80');
+          });
+          btn.classList.add('active-nav-tab', 'text-white', 'font-bold');
+          btn.classList.remove('text-[#96f681]/80');
+
+          // Show targeted view, hide others
+          tabContents.forEach(content => {
+            if (content.id === targetId) {
+              content.classList.remove('hidden');
+            } else {
+              content.classList.add('hidden');
+            }
+          });
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+
+      // 2. REFRESH ACTION (Tab 1)
+      const refreshBtn = document.getElementById('refresh-action-btn');
+      const refreshIcon = document.getElementById('refresh-icon');
+      const moistureDisplay = document.getElementById('moisture-display');
+      const moistureProgressBar = document.getElementById('moisture-progress-bar');
+
+      if (refreshBtn && refreshIcon) {
+        refreshBtn.addEventListener('click', () => {
+          refreshIcon.classList.add('animate-spin');
+          setTimeout(() => {
+            refreshIcon.classList.remove('animate-spin');
+            if (moistureDisplay && moistureProgressBar) {
+              const currentVal = parseInt(moistureDisplay.textContent, 10);
+              const nextVal = currentVal >= 32 ? 28 : currentVal + 2;
+              moistureDisplay.textContent = nextVal + '%';
+              moistureProgressBar.style.width = nextVal + '%';
+            }
+          }, 600);
+        });
+      }
+
+      // 3. START / END IRRIGATION BUTTONS & 10-SECOND SAFETY COOLDOWN
+      const startBtn = document.getElementById('start-btn');
+      const endBtn = document.getElementById('end-btn');
+      const cooldownPill = document.getElementById('cooldown-pill');
+      const cooldownTimer = document.getElementById('cooldown-timer');
+      let cooldownInterval = null;
+
+      if (startBtn && endBtn) {
+        startBtn.addEventListener('click', () => {
+          startBtn.classList.add('ring-2', 'ring-offset-2', 'ring-white', 'scale-105');
+          endBtn.classList.remove('ring-2', 'ring-offset-2', 'ring-white', 'scale-105');
+          endBtn.classList.add('opacity-90', 'bg-red-500', 'text-white');
+          endBtn.classList.remove('bg-[#EEEEEE]', 'text-[#616161]');
+        });
+
+        endBtn.addEventListener('click', () => {
+          endBtn.classList.remove('ring-2', 'ring-offset-2', 'ring-white', 'scale-105', 'bg-red-500', 'text-white');
+          endBtn.classList.add('bg-[#EEEEEE]', 'text-[#616161]');
+          startBtn.classList.remove('ring-2', 'ring-offset-2', 'ring-white', 'scale-105');
+          
+          // Trigger 10-Second Safety Cooldown Lock
+          startBtn.disabled = true;
+          startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          cooldownPill.classList.remove('hidden');
+          
+          let timeLeft = 10;
+          cooldownTimer.textContent = timeLeft + 's';
+          
+          clearInterval(cooldownInterval);
+          cooldownInterval = setInterval(() => {
+            timeLeft--;
+            cooldownTimer.textContent = timeLeft + 's';
+            if (timeLeft <= 0) {
+              clearInterval(cooldownInterval);
+              cooldownPill.classList.add('hidden');
+              startBtn.disabled = false;
+              startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+          }, 1000);
+        });
+      }
+
+      // 4. DEMO TAB STATE CYCLER & SCENARIOS (Tab 3)
+      const demoStates = [
+        {
+          ppm: '880',
+          flow: '1.8',
+          soil: '28%',
+          status: 'Dry',
+          textColor: '#D32F2F',
+          aiText: '"Source water salinity is elevated (880 ppm). System has automatically routed water through the charcoal-sand bio-filter before mixing liquid nutrients. Soil moisture is at 28%; current cycle will restore optimal hydration in 45 seconds without salt buildup."'
+        },
+        {
+          ppm: '180',
+          flow: '2.4',
+          soil: '45%',
+          status: 'Optimal',
+          textColor: '#2E7D32',
+          aiText: '"Source water salinity is safe (180 ppm). Bio-filter is bypassed directly to preserve filtration bed life. Clean water is mixed with 30 mL fertigation dose for direct root absorption."'
+        },
+        {
+          ppm: '920',
+          flow: '0.9',
+          soil: '12%',
+          status: 'Drought',
+          textColor: '#C62828',
+          aiText: '"Severe drought stress detected (soil moisture 12%). Salinity is high (920 ppm). Bio-filter activated at max capacity with emergency 50 mL nutrient boost."'
+        }
+      ];
+
+      let demoIndex = 0;
+      function applyDemoState(state) {
+        const ppm = document.getElementById('demo-ppm-val');
+        const flow = document.getElementById('demo-flow-val');
+        const soil = document.getElementById('demo-soil-val');
+        const soilStatus = document.getElementById('demo-soil-status');
+        const aiText = document.getElementById('ai-summary-text');
+        
+        // Also mirror to Tab 2
+        const aquaTdsVal = document.getElementById('aquatds-tds-val');
+        const aquaFlowVal = document.getElementById('aquatds-flow-val');
+        const aquaSoilVal = document.getElementById('aquatds-soil-val');
+        const aquaSoilStatus = document.getElementById('aquatds-soil-status');
+
+        if (ppm) { ppm.textContent = state.ppm; ppm.style.color = state.textColor; }
+        if (flow) { flow.textContent = state.flow; }
+        if (soil) { soil.textContent = state.soil; }
+        if (soilStatus) { soilStatus.textContent = state.status; }
+        if (aiText) { aiText.textContent = state.aiText; }
+
+        if (aquaTdsVal) { aquaTdsVal.textContent = state.ppm + ' ppm'; aquaTdsVal.style.color = state.textColor; }
+        if (aquaFlowVal) { aquaFlowVal.textContent = state.flow + ' L/s'; }
+        if (aquaSoilVal) { aquaSoilVal.textContent = state.soil; }
+        if (aquaSoilStatus) { aquaSoilStatus.textContent = state.status; }
+      }
+
+      const cycleBtn = document.getElementById('cycleDemoStateBtn');
+      if (cycleBtn) {
+        cycleBtn.addEventListener('click', () => {
+          demoIndex = (demoIndex + 1) % demoStates.length;
+          applyDemoState(demoStates[demoIndex]);
+        });
+      }
+
+      // Quick scenario buttons
+      const btnSaline = document.getElementById('scenario-saline-btn');
+      const btnFresh = document.getElementById('scenario-fresh-btn');
+      const btnDrought = document.getElementById('scenario-drought-btn');
+
+      if (btnSaline) btnSaline.addEventListener('click', () => applyDemoState(demoStates[0]));
+      if (btnFresh) btnFresh.addEventListener('click', () => applyDemoState(demoStates[1]));
+      if (btnDrought) btnDrought.addEventListener('click', () => applyDemoState(demoStates[2]));
+
+    })();
+  </script>
+
+</body>
+</html>
