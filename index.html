@@ -149,9 +149,9 @@
           <span>REFRESH</span>
         </button>
 
-        <div class="flex items-center gap-1.5 px-3 py-1 bg-[#0b5c08] rounded-full border border-white/10 shadow-inner">
+        <div class="flex items-center gap-1.5 px-3 py-1 bg-[#0b5c08] rounded-full border border-white/10 shadow-inner" title="Firebase Project: agroflow-8da1a | Site: agroflow-ai-project.web.app">
           <span class="w-2 h-2 rounded-full bg-[#7edc6b] animate-ping"></span>
-          <span class="text-[11px] font-bold uppercase tracking-wider text-[#96f681]">Telemetry Active</span>
+          <span id="firebase-sync-badge" class="text-[11px] font-bold uppercase tracking-wider text-[#96f681]">Telemetry Active</span>
         </div>
       </div>
 
@@ -759,6 +759,47 @@
       if (btnDrought) btnDrought.addEventListener('click', () => applyDemoState(demoStates[2]));
 
     })();
+  </script>
+
+  <!-- ========================================================================= -->
+  <!-- FIREBASE SDK INITIALIZATION (Project: agroflow-8da1a)                     -->
+  <!-- ========================================================================= -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAnalytics, isSupported as isAnalyticsSupported } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDErqM-MVy96Um5eSyw9QRSs1coUSO-YjE",
+      authDomain: "agroflow-8da1a.firebaseapp.com",
+      projectId: "agroflow-8da1a",
+      storageBucket: "agroflow-8da1a.firebasestorage.app",
+      messagingSenderId: "354471082993",
+      appId: "1:354471082993:web:4ae3082776443b9b6ba250",
+      measurementId: "G-0WZPED2MEK"
+    };
+
+    // Initialize Firebase
+    try {
+      const app = initializeApp(firebaseConfig);
+      window.__firebaseApp = app;
+      console.log("[AgroFlow] Firebase app initialized successfully:", app.name);
+
+      isAnalyticsSupported().then(supported => {
+        if (supported) {
+          const analytics = getAnalytics(app);
+          window.__firebaseAnalytics = analytics;
+          console.log("[AgroFlow] Firebase Analytics active (Measurement ID: G-0WZPED2MEK)");
+        }
+      }).catch(err => console.warn("[AgroFlow] Analytics notice:", err));
+
+      const fbBadge = document.getElementById('firebase-sync-badge');
+      if (fbBadge) {
+        fbBadge.textContent = 'Cloud Sync: agroflow-8da1a';
+      }
+    } catch (e) {
+      console.error("[AgroFlow] Firebase initialization failed:", e);
+    }
   </script>
 
 </body>
