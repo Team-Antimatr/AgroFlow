@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AgroFlow AI — Circuit Diagram & Pinout Specification</title>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Google Sans Flex', sans-serif; background-color: #0b1320; color: #f8fafc; }
+    code, pre { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="p-4 md:p-8 max-w-6xl mx-auto">
+
+  <header class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-700/60 pb-6">
+    <div>
+      <div class="flex items-center gap-2.5">
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">Verified Prototype</span>
+        <span class="text-xs text-slate-400">Team Antimatr</span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white mt-1">AgroFlow AI — Complete Circuit Diagram</h1>
+      <p class="text-sm text-slate-400 mt-1">Accurate pin-to-pin wiring schematic for Arduino Uno R3, sensors, actuators, and wireless bridge.</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <a href="circuit_diagram.png" download="AgroFlow_Circuit_Diagram.png" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+        <span>Download 4K PNG</span>
+      </a>
+      <a href="circuit_diagram.svg" download="AgroFlow_Circuit_Diagram.svg" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 rounded-xl text-xs font-bold transition-all">
+        <span>Vector SVG</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- High-Res Diagram Showcase -->
+  <div class="rounded-3xl border border-slate-700 bg-slate-900/60 p-2 md:p-4 shadow-2xl mb-8 overflow-hidden">
+    <img src="circuit_diagram.png" alt="AgroFlow AI Complete Circuit Schematic" class="w-full h-auto rounded-2xl border border-slate-800"/>
+  </div>
+
+  <!-- Complete Master Pinout Table -->
+  <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl mb-8">
+    <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+      <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+      Master Hardware Pinout Table
+    </h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-xs text-left border-collapse">
+        <thead>
+          <tr class="border-b border-slate-700 bg-slate-800/60 text-slate-300 font-bold uppercase tracking-wider text-[11px]">
+            <th class="p-3">Component Name</th>
+            <th class="p-3">Component Pin</th>
+            <th class="p-3">Connected To (Arduino / Rail)</th>
+            <th class="p-3">Wire Color (Standard)</th>
+            <th class="p-3">Function / Role</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800 font-mono">
+          <tr class="hover:bg-slate-800/30">
+            <td class="p-3 font-sans font-bold text-slate-100">Breadboard Power Rail</td>
+            <td class="p-3 text-red-400">Red Rail (+)</td>
+            <td class="p-3 text-red-400 font-bold">Arduino 5V</td>
+            <td class="p-3 font-sans">Red</td>
+            <td class="p-3 font-sans text-slate-400">Common 5V power bus for all modules</td>
+          </tr>
+          <tr class="hover:bg-slate-800/30">
+            <td class="p-3 font-sans font-bold text-slate-100">Breadboard Ground Rail</td>
+            <td class="p-3 text-slate-400">Blue Rail (-)</td>
+            <td class="p-3 text-slate-300 font-bold">Arduino GND</td>
+            <td class="p-3 font-sans">Black / Blue</td>
+            <td class="p-3 font-sans text-slate-400">Common ground reference for all modules</td>
+          </tr>
+          <tr class="hover:bg-slate-800/30">
+            <td class="p-3 font-sans font-bold text-sky-300">Analog TDS Water Sensor</td>
+            <td class="p-3">A (Signal)</td>
+            <td class="p-3 text-sky-400 font-bold">Arduino Pin A0</td>
+            <td class="p-3 font-sans">Blue / Green</td>
+            <td class="p-3 font-sans text-slate-400">Measures water salinity & purity (0 to 1500 PPM)</td>
+          </tr>
+          <tr class="hover:bg-slate-800/30">
+            <td class="p-3 font-sans font-bold text-emerald-300">Capacitive Soil Moisture V2.0</td>
+            <td class="p-3">AOUT (Signal)</td>
+            <td class="p-3 text-emerald-400 font-bold">Arduino Pin A1</td>
+            <td class="p-3 font-sans">Yellow / White</td>
+            <td class="p-3 font-sans text-slate-400">Reads soil hydration percentage (0% to 100%)</td>
+          </tr>
+          <tr class="hover:bg-slate-800/30">
+            <td class="p-3 font-sans font-bold text-amber-300">SG90 Micro Servo Motor</td>
+            <td class="p-3">Signal Wire</td>
+            <td class="p-3 text-amber-400 font-bold">Arduino Pin 3 (PWM)</td>
+            <td class="p-3 font-sans">Yellow / Orange</td>
+            <td class="p-3 font-sans text-slate-400">0° = Clean Bypass, 90° = Bio-Filter Divert</td>
+          </tr>
+          <tr class="hover:bg-slate-800/30">
+            <td class="p-3 font-sans font-bold text-orange-300">HC-05 Bluetooth Module</td>
+            <td class="p-3">TXD (Transmit)</td>
+            <td class="p-3 text-orange-400 font-bold">Arduino Pin 10 (RX)</td>
+            <td class="p-3 font-sans">Green / Orange</td>
+            <td class="p-3 font-sans text-slate-400">Sends JSON telemetry stream to Web App</td>
+          </tr>
+          <tr class="hover:bg-slate-800/30">
+            <td class="p-3 font-sans font-bold text-orange-300">HC-05 Bluetooth Module</td>
+            <td class="p-3">RXD (Receive)</td>
+            <td class="p-3 text-orange-400 font-bold">Arduino Pin 11 (TX)</td>
+            <td class="p-3 font-sans">Yellow / White</td>
+            <td class="p-3 font-sans text-slate-400">Receives app commands (PUMP_ON, DOSE, etc.)</td>
+          </tr>
+          <tr class="hover:bg-slate-800/30">
+            <td class="p-3 font-sans font-bold text-pink-300">2-Channel Relay Module</td>
+            <td class="p-3">IN1 (Channel 1)</td>
+            <td class="p-3 text-pink-400 font-bold">Arduino Pin 7</td>
+            <td class="p-3 font-sans">Purple / Blue</td>
+            <td class="p-3 font-sans text-slate-400">Switches Pump 1 (Groundwater Lift Pump)</td>
+          </tr>
+          <tr class="hover:bg-slate-800/30">
+            <td class="p-3 font-sans font-bold text-purple-300">2-Channel Relay Module</td>
+            <td class="p-3">IN2 (Channel 2)</td>
+            <td class="p-3 text-purple-400 font-bold">Arduino Pin 8</td>
+            <td class="p-3 font-sans">White / Gray</td>
+            <td class="p-3 font-sans text-slate-400">Switches Pump 2 (Precision 30mL Nutrient Dosing)</td>
+          </tr>
+          <tr class="hover:bg-slate-800/30">
+            <td class="p-3 font-sans font-bold text-rose-300">Pump 1 (In-Line DC Pump)</td>
+            <td class="p-3">Power Terminals</td>
+            <td class="p-3 text-rose-400 font-bold">Relay 1 COM & NO</td>
+            <td class="p-3 font-sans">Red & Black</td>
+            <td class="p-3 font-sans text-slate-400">Powered via External Battery / 5V DC Supply</td>
+          </tr>
+          <tr class="hover:bg-slate-800/30">
+            <td class="p-3 font-sans font-bold text-rose-300">Pump 2 (Dosing DC Pump)</td>
+            <td class="p-3">Power Terminals</td>
+            <td class="p-3 text-rose-400 font-bold">Relay 2 COM & NO</td>
+            <td class="p-3 font-sans">Red & Black</td>
+            <td class="p-3 font-sans text-slate-400">Powered via External Battery / 5V DC Supply</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</body>
+</html>
