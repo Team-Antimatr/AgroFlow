@@ -23,18 +23,41 @@
       <p class="text-sm text-slate-400 mt-1">Accurate pin-to-pin wiring schematic for Arduino Uno R3, sensors, actuators, and wireless bridge.</p>
     </div>
     <div class="flex items-center gap-2">
-      <a href="circuit_diagram.png" download="AgroFlow_Circuit_Diagram.png" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
-        <span>Download 4K PNG</span>
+      <a href="circuit_schematic_line.png" download="AgroFlow_Line_Schematic.png" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+        <span>Download Line Schematic</span>
       </a>
-      <a href="circuit_diagram.svg" download="AgroFlow_Circuit_Diagram.svg" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 rounded-xl text-xs font-bold transition-all">
-        <span>Vector SVG</span>
+      <a href="circuit_diagram.png" download="AgroFlow_Circuit_Diagram.png" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 rounded-xl text-xs font-bold transition-all">
+        <span>Color Layout PNG</span>
       </a>
     </div>
   </header>
 
-  <!-- High-Res Diagram Showcase -->
-  <div class="rounded-3xl border border-slate-700 bg-slate-900/60 p-2 md:p-4 shadow-2xl mb-8 overflow-hidden">
-    <img src="circuit_diagram.png" alt="AgroFlow AI Complete Circuit Schematic" class="w-full h-auto rounded-2xl border border-slate-800"/>
+  <!-- 1. Engineering Line Schematic Showcase (Clean White Background) -->
+  <div class="mb-10">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-base font-bold text-white flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-sky-400"></span>
+        1. Engineering Line Circuit Schematic (Official Project Report Style)
+      </h2>
+      <span class="text-xs text-slate-400">White Background / Orthogonal Wiring</span>
+    </div>
+    <div class="rounded-3xl border border-slate-700 bg-white p-2 md:p-4 shadow-2xl overflow-hidden">
+      <img src="circuit_schematic_line.png" alt="AgroFlow AI Engineering Line Schematic Diagram" class="w-full h-auto rounded-xl"/>
+    </div>
+  </div>
+
+  <!-- 2. Hardware Layout Diagram -->
+  <div class="mb-10">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-base font-bold text-white flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+        2. Hardware Module Layout & Breadboard Wiring
+      </h2>
+      <span class="text-xs text-slate-400">Color-Coded Wire Tracing</span>
+    </div>
+    <div class="rounded-3xl border border-slate-700 bg-slate-900/60 p-2 md:p-4 shadow-2xl overflow-hidden">
+      <img src="circuit_diagram.png" alt="AgroFlow AI Complete Circuit Schematic" class="w-full h-auto rounded-2xl border border-slate-800"/>
+    </div>
   </div>
 
   <!-- Complete Master Pinout Table -->
