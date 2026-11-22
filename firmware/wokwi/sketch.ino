@@ -18,7 +18,8 @@ const int PIN_BT_TX      = 11; // Connect to HC-05 RX (via 1k/2k voltage divider
 SoftwareSerial btSerial(PIN_BT_RX, PIN_BT_TX);
 
 // System Parameters & Thresholds
-const int TDS_THRESHOLD_PPM     = 500; // Impurity limit: >500 ppm routes to bio-filter
+const int TDS_THRESHOLD_HIGH    = 520; // Impurity limit: >520 ppm routes to bio-filter
+const int TDS_THRESHOLD_LOW     = 480; // Hysteresis buffer: <480 ppm returns to clean bypass
 const int SOIL_MAX_MOISTURE_PCT = 60;  // Safety lock: >=60% aborts to prevent root rot
 
 // Actuator State
@@ -26,7 +27,7 @@ Servo diverterServo;
 bool mainPumpActive = false;
 bool dosingActive   = false;
 bool manualOverride = false;
-int currentServoAngle = 0;
+int currentServoAngle = -1; // -1 ensures initial homing write occurs once
 
 // Timing Control (Non-blocking millis)
 unsigned long lastTelemetryTime = 0;
@@ -61,9 +62,13 @@ void processCommand(String cmd) {
     doseEndTime = millis() + (ml * 80); // ~80ms per ml calibration
     broadcastMessage(String("{\"ack\":\"DOSE\",\"ml\":") + String(ml) + "}");
   } else if (cmd.startsWith("CMD:VALVE:")) {
+    manualOverride = true;
     int angle = cmd.substring(10).toInt();
-    currentServoAngle = constrain(angle, 0, 90);
-    diverterServo.write(currentServoAngle);
+    int target = constrain(angle, 0, 90);
+    if (target != currentServoAngle) {
+      currentServoAngle = target;
+      diverterServo.write(currentServoAngle);
+    }
     broadcastMessage(String("{\"ack\":\"VALVE\",\"angle\":") + String(currentServoAngle) + "}");
   } else if (cmd == "CMD:AUTO") {
     manualOverride = false;
@@ -128,13 +133,19 @@ void loop() {
       mainPumpActive = true;
       digitalWrite(PIN_RELAY_MAIN, HIGH);
 
-      // Automated Impurity Detection & Servo Diversion
-      if (tdsPPM > TDS_THRESHOLD_PPM) {
-        currentServoAngle = 90; // Divert to Bio-Sand & Charcoal Filter
-      } else {
-        currentServoAngle = 0;  // Direct Clean Bypass
+      // Automated Impurity Detection & Servo Diversion with Hysteresis
+      int targetAngle = currentServoAngle;
+      if (tdsPPM > TDS_THRESHOLD_HIGH) {
+        targetAngle = 90; // Divert to Bio-Sand & Charcoal Filter
+      } else if (tdsPPM < TDS_THRESHOLD_LOW) {
+        targetAngle = 0;  // Direct Clean Bypass
       }
-      diverterServo.write(currentServoAngle);
+
+      // Only command the servo when position actually needs to change (eliminates jitter)
+      if (targetAngle != currentServoAngle) {
+        currentServoAngle = targetAngle;
+        diverterServo.write(currentServoAngle);
+      }
     }
   }
 
