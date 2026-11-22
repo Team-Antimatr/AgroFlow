@@ -28,6 +28,21 @@ bool mainPumpActive = false;
 bool dosingActive   = false;
 bool manualOverride = false;
 int currentServoAngle = -1; // -1 ensures initial homing write occurs once
+bool servoMoving = false;
+unsigned long servoMoveEndTime = 0;
+
+void moveServoSmoothly(int targetAngle) {
+  targetAngle = constrain(targetAngle, 0, 90);
+  if (targetAngle != currentServoAngle) {
+    currentServoAngle = targetAngle;
+    if (!diverterServo.attached()) {
+      diverterServo.attach(PIN_SERVO);
+    }
+    diverterServo.write(currentServoAngle);
+    servoMoveEndTime = millis() + 450; // Allow 450ms to reach target
+    servoMoving = true;
+  }
+}
 
 // Timing Control (Non-blocking millis)
 unsigned long lastTelemetryTime = 0;
@@ -64,11 +79,7 @@ void processCommand(String cmd) {
   } else if (cmd.startsWith("CMD:VALVE:")) {
     manualOverride = true;
     int angle = cmd.substring(10).toInt();
-    int target = constrain(angle, 0, 90);
-    if (target != currentServoAngle) {
-      currentServoAngle = target;
-      diverterServo.write(currentServoAngle);
-    }
+    moveServoSmoothly(angle);
     broadcastMessage(String("{\"ack\":\"VALVE\",\"angle\":") + String(currentServoAngle) + "}");
   } else if (cmd == "CMD:AUTO") {
     manualOverride = false;
@@ -80,19 +91,17 @@ void setup() {
   Serial.begin(9600);
   btSerial.begin(9600);
 
-  // Initialize Relay Output Pins
+  // Initialize Relay Output Pins (Default OFF)
   pinMode(PIN_RELAY_MAIN, OUTPUT);
   pinMode(PIN_RELAY_DOSE, OUTPUT);
   digitalWrite(PIN_RELAY_MAIN, LOW);
   digitalWrite(PIN_RELAY_DOSE, LOW);
 
-  // Attach and Home Servo Motor (0° = Clean Bypass)
-  diverterServo.attach(PIN_SERVO);
-  diverterServo.write(0);
-  currentServoAngle = 0;
+  // Initial Home Servo (0° = Clean Bypass)
+  moveServoSmoothly(0);
 
   cycleStartTime = millis();
-  broadcastMessage(F("{\"status\":\"AgroFlow AI Initialized\",\"version\":\"1.1.0\",\"baud\":9600}"));
+  broadcastMessage(F("{\"status\":\"AgroFlow AI Initialized\",\"version\":\"1.2.0\",\"baud\":9600}"));
 }
 
 void loop() {
@@ -108,14 +117,20 @@ void loop() {
     processCommand(cmd);
   }
 
-  // Handle Dosing Auto-Cutoff
+  // 2. Auto-detach Servo once it reaches position (100% eliminates buzzing, jitter & power sag)
+  if (servoMoving && now >= servoMoveEndTime) {
+    diverterServo.detach();
+    servoMoving = false;
+  }
+
+  // 3. Handle Dosing Auto-Cutoff
   if (dosingActive && now >= doseEndTime && doseEndTime > 0) {
     dosingActive = false;
     digitalWrite(PIN_RELAY_DOSE, LOW);
     doseEndTime = 0;
   }
 
-  // 2. Read Analog Inputs
+  // 4. Read Analog Inputs
   int rawTDS = analogRead(PIN_TDS);
   int rawSoil = analogRead(PIN_SOIL);
 
@@ -123,7 +138,7 @@ void loop() {
   int tdsPPM = map(rawTDS, 0, 1023, 0, 1500);
   int soilMoisturePct = map(rawSoil, 0, 1023, 0, 100);
 
-  // 3. Closed-Loop Automation (Only when not in manual override)
+  // 5. Closed-Loop Automation (Only when not in manual override)
   if (!manualOverride) {
     if (soilMoisturePct >= SOIL_MAX_MOISTURE_PCT) {
       // Soil already saturated — auto stop
@@ -134,17 +149,10 @@ void loop() {
       digitalWrite(PIN_RELAY_MAIN, HIGH);
 
       // Automated Impurity Detection & Servo Diversion with Hysteresis
-      int targetAngle = currentServoAngle;
       if (tdsPPM > TDS_THRESHOLD_HIGH) {
-        targetAngle = 90; // Divert to Bio-Sand & Charcoal Filter
+        moveServoSmoothly(90); // Divert to Bio-Sand & Charcoal Filter
       } else if (tdsPPM < TDS_THRESHOLD_LOW) {
-        targetAngle = 0;  // Direct Clean Bypass
-      }
-
-      // Only command the servo when position actually needs to change (eliminates jitter)
-      if (targetAngle != currentServoAngle) {
-        currentServoAngle = targetAngle;
-        diverterServo.write(currentServoAngle);
+        moveServoSmoothly(0);  // Direct Clean Bypass
       }
     }
   }
