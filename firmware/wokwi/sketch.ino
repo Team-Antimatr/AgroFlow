@@ -39,7 +39,7 @@ void moveServoSmoothly(int targetAngle) {
       diverterServo.attach(PIN_SERVO);
     }
     diverterServo.write(currentServoAngle);
-    servoMoveEndTime = millis() + 450; // Allow 450ms to reach target
+    servoMoveEndTime = millis() + 600; // Allow 600ms to complete physical rotation
     servoMoving = true;
   }
 }
@@ -138,7 +138,16 @@ void loop() {
   int tdsPPM = map(rawTDS, 0, 1023, 0, 1500);
   int soilMoisturePct = map(rawSoil, 0, 1023, 0, 100);
 
-  // 5. Closed-Loop Automation (Only when not in manual override)
+  // 5. Automated Impurity Detection & Servo Diversion (0° = Clean Bypass, 90° = Bio-Filter Divert)
+  if (!manualOverride) {
+    if (tdsPPM > TDS_THRESHOLD_HIGH) {
+      moveServoSmoothly(90); // High TDS / Impure -> Divert to Bio-Sand & Charcoal Filter
+    } else if (tdsPPM < TDS_THRESHOLD_LOW) {
+      moveServoSmoothly(0);  // Low TDS / Satisfactory -> Direct Clean Bypass
+    }
+  }
+
+  // 6. Closed-Loop Irrigation Automation (Soil Moisture Check)
   if (!manualOverride) {
     if (soilMoisturePct >= SOIL_MAX_MOISTURE_PCT) {
       // Soil already saturated — auto stop
@@ -147,13 +156,6 @@ void loop() {
     } else {
       mainPumpActive = true;
       digitalWrite(PIN_RELAY_MAIN, HIGH);
-
-      // Automated Impurity Detection & Servo Diversion with Hysteresis
-      if (tdsPPM > TDS_THRESHOLD_HIGH) {
-        moveServoSmoothly(90); // Divert to Bio-Sand & Charcoal Filter
-      } else if (tdsPPM < TDS_THRESHOLD_LOW) {
-        moveServoSmoothly(0);  // Direct Clean Bypass
-      }
     }
   }
 
