@@ -187,20 +187,14 @@ void loop() {
     broadcastMessage(String("{\"alert\":\"AUTO_SHUTOFF\",\"reason\":\"SOIL_SATURATED\",\"moisture\":") + String(soilMoisturePct) + "}");
   }
 
-  /* -------------------------------------------------------------
-   * 6. BIO-FILTER DIVERSION (COMMENTED OUT FOR DIRECT-TO-SOIL PROTOTYPE)
-   * The pipe goes directly to the soil tray; bio-filter is skipped for now.
-   * Servo stays locked at 0° (Direct Path).
-   *
-   * (Uncomment below when Bio-Filter column is physically connected):
-   * if (!valveManualOverride) {
-   *   if (tdsPPM > TDS_THRESHOLD_HIGH) {
-   *     moveServoSmoothly(90); // Divert to Bio-Sand & Charcoal Filter
-   *   } else if (tdsPPM < TDS_THRESHOLD_LOW) {
-   *     moveServoSmoothly(0);  // Direct Clean Bypass
-   *   }
-   * }
-   * ------------------------------------------------------------- */
+  // 6. Automated Impurity Detection & Servo Diversion (0° = Clean Bypass, 90° = Bio-Filter)
+  if (!valveManualOverride) {
+    if (tdsPPM > TDS_THRESHOLD_HIGH) {
+      moveServoSmoothly(90); // High Salinity (>520 PPM) -> Rotate to 90°
+    } else if (tdsPPM < TDS_THRESHOLD_LOW) {
+      moveServoSmoothly(0);  // Clean Water (<480 PPM) -> Return to 0°
+    }
+  }
 
   // 7. Broadcast Telemetry Packet every 1 second
   if (now - lastTelemetryTime >= TELEMETRY_INTERVAL) {
