@@ -9,8 +9,8 @@
 const int PIN_TDS        = A0; // TDS Sensor Potentiometer (0 to 1500 ppm)
 const int PIN_SOIL       = A1; // Soil Moisture Potentiometer (0% to 100%)
 const int PIN_SERVO      = 3;  // SG90 Servo Diverter (PWM)
-const int PIN_RELAY_MAIN = 7;  // Relay 1: Reservoir 1 Submersible Lift Pump
-const int PIN_RELAY_DOSE = 8;  // Relay 2: Reservoir 2 Fertilizer Dosing Pump
+const int PIN_RELAY_MAIN = 7;  // Relay 1: Reservoir 1 Submersible Lift Pump (ACTIVE)
+// const int PIN_RELAY_DOSE = 8;  // Relay 2: Fertilizer Dosing Pump (TEMPORARILY DISABLED: Broken wire)
 const int PIN_BT_RX      = 10; // Connect to HC-05 TX
 const int PIN_BT_TX      = 11; // Connect to HC-05 RX (via 1k/2k voltage divider)
 
@@ -59,11 +59,15 @@ void broadcastMessage(const String& msg) {
 }
 
 void startDosing(int ml) {
+  /* -------------------------------------------------------------
+   * FERTILIZATION PUMP TEMPORARILY DISABLED (BROKEN WIRE)
+   * -------------------------------------------------------------
   if (ml <= 0) ml = 30;
   dosingActive = true;
   digitalWrite(PIN_RELAY_DOSE, RELAY_ACTIVE);
-  doseEndTime = millis() + ((unsigned long)ml * 80); // ~80ms per ml calibration
+  doseEndTime = millis() + ((unsigned long)ml * 80);
   broadcastMessage(String("{\"ack\":\"DOSE\",\"ml\":") + String(ml) + "}");
+  ------------------------------------------------------------- */
 }
 
 void processCommand(String cmd) {
@@ -90,8 +94,8 @@ void processCommand(String cmd) {
     }
     broadcastMessage(String("{\"ack\":\"START\",\"zone\":\"") + zone + "\",\"pump\":1}");
 
-    // Inject timed fertigation dose (~30 mL) for the cycle
-    startDosing(30);
+    // Note: Fertilizer dosing pump call commented out (broken wire)
+    // startDosing(30);
 
   // Stop command (compatible with both Web Dashboard 'CMD:PUMP:OFF' and Mobile App 'CMD_STOP')
   } else if (cmd == "CMD:PUMP:OFF" || cmd == "CMD_STOP" || cmd == "CMD:STOP") {
@@ -128,11 +132,13 @@ void setup() {
 
   // Initialize Relay Output Pins (Default OFF)
   pinMode(PIN_RELAY_MAIN, OUTPUT);
-  pinMode(PIN_RELAY_DOSE, OUTPUT);
   digitalWrite(PIN_RELAY_MAIN, RELAY_INACTIVE);
-  digitalWrite(PIN_RELAY_DOSE, RELAY_INACTIVE);
 
-  // Initial Home Servo (0° = Clean Bypass)
+  // Relay 2 (Dosing) temporarily commented out
+  // pinMode(PIN_RELAY_DOSE, OUTPUT);
+  // digitalWrite(PIN_RELAY_DOSE, RELAY_INACTIVE);
+
+  // Initial Home Servo: 0° (Direct Clean Path to Soil)
   moveServoSmoothly(0);
 
   broadcastMessage(F("{\"status\":\"AgroFlow AI Initialized\",\"version\":\"1.2.1\",\"baud\":9600}"));
@@ -157,12 +163,14 @@ void loop() {
     servoMoving = false;
   }
 
-  // 3. Handle Dosing Auto-Cutoff
-  if (dosingActive && now >= doseEndTime && doseEndTime > 0) {
-    dosingActive = false;
-    digitalWrite(PIN_RELAY_DOSE, RELAY_INACTIVE);
-    doseEndTime = 0;
-  }
+  /* -------------------------------------------------------------
+   * 3. DOSING AUTO-CUTOFF (TEMPORARILY COMMENTED OUT)
+   * if (dosingActive && now >= doseEndTime && doseEndTime > 0) {
+   *   dosingActive = false;
+   *   digitalWrite(PIN_RELAY_DOSE, RELAY_INACTIVE);
+   *   doseEndTime = 0;
+   * }
+   * ------------------------------------------------------------- */
 
   // 4. Read Analog Inputs
   int rawTDS = analogRead(PIN_TDS);
@@ -179,14 +187,20 @@ void loop() {
     broadcastMessage(String("{\"alert\":\"AUTO_SHUTOFF\",\"reason\":\"SOIL_SATURATED\",\"moisture\":") + String(soilMoisturePct) + "}");
   }
 
-  // 6. Automated Impurity Detection & Servo Diversion with Hysteresis (Active unless valve manually overridden)
-  if (!valveManualOverride) {
-    if (tdsPPM > TDS_THRESHOLD_HIGH) {
-      moveServoSmoothly(90); // Divert to Bio-Sand & Charcoal Filter
-    } else if (tdsPPM < TDS_THRESHOLD_LOW) {
-      moveServoSmoothly(0);  // Direct Clean Bypass
-    }
-  }
+  /* -------------------------------------------------------------
+   * 6. BIO-FILTER DIVERSION (COMMENTED OUT FOR DIRECT-TO-SOIL PROTOTYPE)
+   * The pipe goes directly to the soil tray; bio-filter is skipped for now.
+   * Servo stays locked at 0° (Direct Path).
+   *
+   * (Uncomment below when Bio-Filter column is physically connected):
+   * if (!valveManualOverride) {
+   *   if (tdsPPM > TDS_THRESHOLD_HIGH) {
+   *     moveServoSmoothly(90); // Divert to Bio-Sand & Charcoal Filter
+   *   } else if (tdsPPM < TDS_THRESHOLD_LOW) {
+   *     moveServoSmoothly(0);  // Direct Clean Bypass
+   *   }
+   * }
+   * ------------------------------------------------------------- */
 
   // 7. Broadcast Telemetry Packet every 1 second
   if (now - lastTelemetryTime >= TELEMETRY_INTERVAL) {
@@ -197,7 +211,7 @@ void loop() {
                     ",\"moisture\":" + String(soilMoisturePct) +
                     ",\"servo\":" + String(currentServoAngle) +
                     ",\"pump\":" + String(mainPumpActive ? 1 : 0) +
-                    ",\"dose\":" + String(dosingActive ? 1 : 0) +
+                    ",\"dose\":0" +
                     ",\"flow\":1.8}";
     broadcastMessage(packet);
   }
