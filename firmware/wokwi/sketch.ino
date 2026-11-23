@@ -2,39 +2,45 @@
 #include <SoftwareSerial.h>
 
 // =========================================================================
-// AgroFlow AI — Arduino Uno Firmware Sketch with Dual Serial & Bluetooth
+// AgroFlow AI — Arduino Uno Firmware (Tested for Real Hardware & Bench Test)
+// Version: 1.4.3 — Active-LOW Relays, Dual Channel Trigger, Clean Telemetry
 // =========================================================================
 
-// Pin Definitions
-const int PIN_TDS        = A0; // TDS Sensor Potentiometer (0 to 1500 ppm)
-const int PIN_SOIL       = A1; // Soil Moisture Potentiometer (0% to 100%)
-const int PIN_SERVO      = 3;  // SG90 Servo Diverter (PWM)
-const int PIN_RELAY_MAIN = 7;  // Relay 1: Reservoir 1 Submersible Lift Pump (ACTIVE)
-// const int PIN_RELAY_DOSE = 8;  // Relay 2: Fertilizer Dosing Pump (TEMPORARILY DISABLED: Broken wire)
-const int PIN_BT_RX      = 10; // Connect to HC-05 TX
-const int PIN_BT_TX      = 11; // Connect to HC-05 RX (via 1k/2k voltage divider)
+// --- Pin Definitions ---
+const int PIN_TDS         = A0; // Analog TDS Sensor (Water Container)
+const int PIN_SOIL        = A1; // Capacitive Soil Moisture Sensor (Soil Tray)
+const int PIN_SERVO       = 3;  // SG90 Servo Diverter (PWM)
+const int PIN_RELAY_MAIN  = 7;  // Relay Channel 1 (IN1)
+const int PIN_RELAY_CH2   = 8;  // Relay Channel 2 (IN2 - Both pins trigger together for foolproof testing)
+const int PIN_BT_RX       = 10; // Connect to HC-05 TX
+const int PIN_BT_TX       = 11; // Connect to HC-05 RX
 
-// Relay State Polarity (HIGH for Wokwi and standard Active-HIGH modules)
-const int RELAY_ACTIVE   = HIGH;
-const int RELAY_INACTIVE = LOW;
+// --- Relay Polarity (CRITICAL: Real Songle Relay boards are Active-LOW) ---
+// LOW  = Relay ON (LED ON, NO connects to COM, Pump runs)
+// HIGH = Relay OFF (LED OFF, NO disconnected, Pump stops)
+const int RELAY_ACTIVE    = LOW;   
+const int RELAY_INACTIVE  = HIGH;  
 
 // Bluetooth Serial Port (9600 Baud)
 SoftwareSerial btSerial(PIN_BT_RX, PIN_BT_TX);
 
-// System Parameters & Thresholds
-const int TDS_THRESHOLD_HIGH    = 520; // Impurity limit: >520 ppm routes to bio-filter
-const int TDS_THRESHOLD_LOW     = 480; // Hysteresis buffer: <480 ppm returns to clean bypass
-const int SOIL_MAX_MOISTURE_PCT = 60;  // Safety lock: >=60% aborts to prevent root rot
+// System Thresholds
+const int TDS_THRESHOLD_HIGH = 520; // >520 ppm: Impurity -> Servo 90°
+const int TDS_THRESHOLD_LOW  = 480; // <480 ppm: Clean water -> Servo 0°
 
-// Actuator State
+// Actuator & State
 Servo diverterServo;
 bool mainPumpActive      = false;
-bool dosingActive        = false;
 bool valveManualOverride = false;
-int currentServoAngle    = -1; // -1 ensures initial homing write occurs once
+int currentServoAngle    = -1;
 bool servoMoving         = false;
 unsigned long servoMoveEndTime = 0;
 
+// Non-blocking Timing
+unsigned long lastTelemetryTime = 0;
+const unsigned long TELEMETRY_INTERVAL = 1000; // 1-second packet stream
+
+// --- Smooth Servo Movement with Auto-Detach ---
 void moveServoSmoothly(int targetAngle) {
   targetAngle = constrain(targetAngle, 0, 90);
   if (targetAngle != currentServoAngle) {
@@ -43,82 +49,50 @@ void moveServoSmoothly(int targetAngle) {
       diverterServo.attach(PIN_SERVO);
     }
     diverterServo.write(currentServoAngle);
-    servoMoveEndTime = millis() + 600; // Allow 600ms to complete physical rotation
+    servoMoveEndTime = millis() + 600; // 600ms rotation window
     servoMoving = true;
   }
 }
 
-// Timing Control (Non-blocking millis)
-unsigned long lastTelemetryTime = 0;
-const unsigned long TELEMETRY_INTERVAL = 1000; // 1-second interval
-unsigned long doseEndTime = 0;
+void setPumpState(bool turnOn) {
+  mainPumpActive = turnOn;
+  int state = turnOn ? RELAY_ACTIVE : RELAY_INACTIVE;
+  // Trigger BOTH Pin 7 (IN1) and Pin 8 (IN2) so wiring to either channel works!
+  digitalWrite(PIN_RELAY_MAIN, state);
+  digitalWrite(PIN_RELAY_CH2, state);
+}
 
 void broadcastMessage(const String& msg) {
   Serial.println(msg);
   btSerial.println(msg);
 }
 
-void startDosing(int ml) {
-  /* -------------------------------------------------------------
-   * FERTILIZATION PUMP TEMPORARILY DISABLED (BROKEN WIRE)
-   * -------------------------------------------------------------
-  if (ml <= 0) ml = 30;
-  dosingActive = true;
-  digitalWrite(PIN_RELAY_DOSE, RELAY_ACTIVE);
-  doseEndTime = millis() + ((unsigned long)ml * 80);
-  broadcastMessage(String("{\"ack\":\"DOSE\",\"ml\":") + String(ml) + "}");
-  ------------------------------------------------------------- */
-}
-
+// --- Process Inbound Commands ---
 void processCommand(String cmd) {
   cmd.trim();
   if (cmd.length() == 0) return;
 
-  // Start command (compatible with both Web Dashboard 'CMD:PUMP:ON' and Mobile App 'CMD_START_Z1')
-  if (cmd == "CMD:PUMP:ON" || cmd.startsWith("CMD_START") || cmd.startsWith("CMD:START")) {
-    int rawSoil = analogRead(PIN_SOIL);
-    int soilMoisturePct = map(rawSoil, 0, 1023, 0, 100);
+  // 1. Pump ON (Forced manual start - no sensor lock blocking your test)
+  if (cmd == "CMD:PUMP:ON" || cmd == "CMD_START" || cmd.startsWith("CMD_START") || cmd == "1") {
+    setPumpState(true);
+    broadcastMessage(F("{\"ack\":\"PUMP_ON\",\"relay\":1,\"status\":\"RUNNING\"}"));
 
-    if (soilMoisturePct >= SOIL_MAX_MOISTURE_PCT) {
-      broadcastMessage(String("{\"err\":\"SOIL_SATURATED\",\"moisture\":") + String(soilMoisturePct) + ",\"action\":\"ABORTED\"}");
-      return;
-    }
+  // 2. Pump OFF
+  } else if (cmd == "CMD:PUMP:OFF" || cmd == "CMD_STOP" || cmd.startsWith("CMD_STOP") || cmd == "0") {
+    setPumpState(false);
+    broadcastMessage(F("{\"ack\":\"PUMP_OFF\",\"relay\":0,\"status\":\"STOPPED\"}"));
 
-    mainPumpActive = true;
-    digitalWrite(PIN_RELAY_MAIN, RELAY_ACTIVE);
-
-    String zone = "Z1";
-    int zIdx = cmd.indexOf("_Z");
-    if (zIdx != -1) {
-      zone = cmd.substring(zIdx + 1);
-    }
-    broadcastMessage(String("{\"ack\":\"START\",\"zone\":\"") + zone + "\",\"pump\":1}");
-
-    // Note: Fertilizer dosing pump call commented out (broken wire)
-    // startDosing(30);
-
-  // Stop command (compatible with both Web Dashboard 'CMD:PUMP:OFF' and Mobile App 'CMD_STOP')
-  } else if (cmd == "CMD:PUMP:OFF" || cmd == "CMD_STOP" || cmd == "CMD:STOP") {
-    mainPumpActive = false;
-    digitalWrite(PIN_RELAY_MAIN, RELAY_INACTIVE);
-    broadcastMessage(F("{\"ack\":\"PUMP_OFF\"}"));
-
-  // Manual dosing command
-  } else if (cmd.startsWith("CMD:DOSE:")) {
-    int ml = cmd.substring(9).toInt();
-    startDosing(ml);
-
-  // Manual diverter valve angle command
+  // 3. Manual Valve Angle (CMD:VALVE:90 or CMD:VALVE:0)
   } else if (cmd.startsWith("CMD:VALVE:")) {
     valveManualOverride = true;
     int angle = cmd.substring(10).toInt();
     moveServoSmoothly(angle);
     broadcastMessage(String("{\"ack\":\"VALVE\",\"angle\":") + String(currentServoAngle) + "}");
 
-  // Return valve to automatic impurity detection
+  // 4. Return to Auto TDS Tracking
   } else if (cmd == "CMD:AUTO" || cmd == "CMD:VALVE:AUTO") {
     valveManualOverride = false;
-    broadcastMessage(F("{\"ack\":\"AUTO_MODE\"}"));
+    broadcastMessage(F("{\"ack\":\"AUTO_MODE\",\"status\":\"TRACKING_TDS\"}"));
   }
 }
 
@@ -126,81 +100,65 @@ void setup() {
   Serial.begin(9600);
   btSerial.begin(9600);
 
-  // Non-blocking serial timeout
   Serial.setTimeout(50);
   btSerial.setTimeout(50);
 
-  // Initialize Relay Output Pins (Default OFF)
+  // Initialize Relay Pins (Default OFF = HIGH)
   pinMode(PIN_RELAY_MAIN, OUTPUT);
-  digitalWrite(PIN_RELAY_MAIN, RELAY_INACTIVE);
+  pinMode(PIN_RELAY_CH2, OUTPUT);
+  setPumpState(false);
 
-  // Relay 2 (Dosing) temporarily commented out
-  // pinMode(PIN_RELAY_DOSE, OUTPUT);
-  // digitalWrite(PIN_RELAY_DOSE, RELAY_INACTIVE);
-
-  // Initial Home Servo: 0° (Direct Clean Path to Soil)
+  // Home Servo at 0° (Clean/Direct Path)
   moveServoSmoothly(0);
 
-  broadcastMessage(F("{\"status\":\"AgroFlow AI Initialized\",\"version\":\"1.2.1\",\"baud\":9600}"));
+  broadcastMessage(F("{\"status\":\"AgroFlow Ready\",\"version\":\"1.4.3\"}"));
 }
 
 void loop() {
   unsigned long now = millis();
 
-  // 1. Process Inbound Commands from USB Serial or Bluetooth
+  // 1. Read Serial Commands (USB Cable)
   if (Serial.available() > 0) {
     String cmd = Serial.readStringUntil('\n');
     processCommand(cmd);
   }
+
+  // 2. Read Bluetooth Commands (HC-05)
   if (btSerial.available() > 0) {
     String cmd = btSerial.readStringUntil('\n');
     processCommand(cmd);
   }
 
-  // 2. Auto-detach Servo once it reaches position (eliminates buzzing & power sag)
+  // 3. Auto-detach Servo once physical rotation completes (zero hum, zero current draw)
   if (servoMoving && now >= servoMoveEndTime) {
     diverterServo.detach();
     servoMoving = false;
   }
 
-  /* -------------------------------------------------------------
-   * 3. DOSING AUTO-CUTOFF (TEMPORARILY COMMENTED OUT)
-   * if (dosingActive && now >= doseEndTime && doseEndTime > 0) {
-   *   dosingActive = false;
-   *   digitalWrite(PIN_RELAY_DOSE, RELAY_INACTIVE);
-   *   doseEndTime = 0;
-   * }
-   * ------------------------------------------------------------- */
-
-  // 4. Read Analog Inputs
-  int rawTDS = analogRead(PIN_TDS);
+  // 4. Read Sensors
+  int rawTDS  = analogRead(PIN_TDS);
   int rawSoil = analogRead(PIN_SOIL);
 
-  // Map to Real-World Units
+  // Conversions
   int tdsPPM = map(rawTDS, 0, 1023, 0, 1500);
-  int soilMoisturePct = map(rawSoil, 0, 1023, 0, 100);
+  if (tdsPPM < 0) tdsPPM = 0;
 
-  // 5. Safety Cutoff: Prevent overwatering and root rot if soil moisture >= 60%
-  if (mainPumpActive && soilMoisturePct >= SOIL_MAX_MOISTURE_PCT) {
-    mainPumpActive = false;
-    digitalWrite(PIN_RELAY_MAIN, RELAY_INACTIVE);
-    broadcastMessage(String("{\"alert\":\"AUTO_SHUTOFF\",\"reason\":\"SOIL_SATURATED\",\"moisture\":") + String(soilMoisturePct) + "}");
-  }
+  // Capacitive calibration: Air ~650 (Dry), Water ~300 (Wet)
+  int soilMoisturePct = map(rawSoil, 650, 300, 0, 100);
+  soilMoisturePct = constrain(soilMoisturePct, 0, 100);
 
-  // 6. Automated Impurity Detection & Servo Diversion (0° = Clean Bypass, 90° = Bio-Filter)
+  // 5. Automatic Impurity Detection (Servo moves to 90° if TDS > 520, 0° if < 480)
   if (!valveManualOverride) {
     if (tdsPPM > TDS_THRESHOLD_HIGH) {
-      moveServoSmoothly(90); // High Salinity (>520 PPM) -> Rotate to 90°
+      moveServoSmoothly(90);
     } else if (tdsPPM < TDS_THRESHOLD_LOW) {
-      moveServoSmoothly(0);  // Clean Water (<480 PPM) -> Return to 0°
+      moveServoSmoothly(0);
     }
   }
 
-  // 7. Broadcast Telemetry Packet every 1 second
+  // 6. Broadcast 1-second Telemetry
   if (now - lastTelemetryTime >= TELEMETRY_INTERVAL) {
     lastTelemetryTime = now;
-
-    // Send formatted JSON for Browser Dashboard & Android App
     String packet = String("{\"tds\":") + String(tdsPPM) +
                     ",\"moisture\":" + String(soilMoisturePct) +
                     ",\"servo\":" + String(currentServoAngle) +
