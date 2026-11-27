@@ -27,14 +27,29 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+    .meter-circle-bg {
+      stroke: #e5e7eb;
+      stroke-dasharray: 220;
+      stroke-dashoffset: 44;
+      transform: rotate(-125deg);
+      transform-origin: 50% 50%;
+    }
+    .meter-circle-fill {
+      stroke: #fa0606;
+      stroke-dasharray: 220;
+      stroke-dashoffset: 70;
+      transform: rotate(-125deg);
+      transform-origin: 50% 50%;
+      transition: stroke-dashoffset 0.6s ease, stroke 0.4s ease;
+    }
   </style>
 </head>
 <body class="p-0 sm:p-4">
 
-  <!-- Mobile Screen Frame (Figma node 542:2 - 402px x 874px) -->
-  <main class="w-full max-w-[402px] min-h-[874px] custom-gradient-bg sm:rounded-[30px] overflow-hidden relative shadow-2xl flex flex-col px-[28px] py-[36px]">
+  <!-- Mobile Screen Frame (402px x 874px exact Figma scale) -->
+  <main class="w-full max-w-[402px] min-h-[874px] custom-gradient-bg sm:rounded-[30px] overflow-hidden relative shadow-2xl flex flex-col px-[28px] py-[34px]">
 
-    <!-- Header Section -->
+    <!-- Header Section (Figma node 542:3 / 568:28) -->
     <header class="pt-6">
       <h1 class="title-gradient text-[30px] font-semibold tracking-tight leading-none mb-2">
         AquaFlow AI
@@ -44,22 +59,32 @@
       </p>
     </header>
 
-    <!-- Navigation Tabs -->
+    <!-- Navigation Tabs (Schedules | AquaTDS | Demo) -->
     <nav class="mt-8 flex items-center gap-7 relative pb-2 border-b border-transparent">
+      <!-- Schedules Tab Button -->
       <div class="relative">
-        <button id="tabSchedules" class="text-[12px] font-medium text-black cursor-pointer">Schedules</button>
-        <div class="absolute -bottom-2 left-0 w-full h-[1.5px] bg-[#007200]"></div>
+        <button id="tabBtnSchedules" class="text-[12px] font-medium text-black cursor-pointer transition">
+          Schedules
+        </button>
+        <div id="underlineSchedules" class="absolute -bottom-2 left-0 w-full h-[1.5px] bg-[#007200] transition-all"></div>
       </div>
-      <button id="tabAquaTDS" class="text-[12px] font-medium text-black flex items-center gap-1 cursor-pointer">
-        AquaTDS
-        <span class="inline-block w-2.5 h-2.5 rounded-full bg-[#007200] opacity-80"></span>
-      </button>
-      <button id="tabDemo" class="text-[12px] font-medium text-black cursor-pointer">
+
+      <!-- AquaTDS Tab Button (node 568:27) -->
+      <div class="relative">
+        <button id="tabBtnAquaTDS" class="text-[12px] font-medium text-black flex items-center gap-1 cursor-pointer transition">
+          AquaTDS
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-[#007200] opacity-80"></span>
+        </button>
+        <div id="underlineAquaTDS" class="absolute -bottom-2 left-0 w-full h-[1.5px] bg-[#007200] hidden transition-all"></div>
+      </div>
+
+      <!-- Demo Tab Button -->
+      <button id="tabBtnDemo" class="text-[12px] font-medium text-black cursor-pointer transition">
         Demo
       </button>
     </nav>
 
-    <!-- Action Buttons Row -->
+    <!-- Action Buttons Row (Refresh | connect Hw | Online & Connected) -->
     <div class="mt-6 flex items-center justify-between gap-2">
       <!-- Refresh Button -->
       <button id="btnRefresh" class="bg-white text-[#007200] text-[12px] font-medium h-[31px] px-4 rounded-[30px] shadow-sm hover:bg-emerald-50 transition active:scale-95 flex items-center justify-center cursor-pointer">
@@ -78,80 +103,159 @@
       </div>
     </div>
 
-    <!-- Soil Moisture Card -->
-    <section class="mt-6 bg-white h-[175px] rounded-[30px] p-5 relative shadow-[2px_2px_8px_rgba(0,0,0,0.08)] flex flex-col justify-between">
-      <div>
-        <div class="flex items-center justify-between">
-          <h2 class="text-[#8b5e34] text-[26px] sm:text-[28px] font-medium leading-none">
-            Soil Moisture
-          </h2>
-          <span id="soilPercentage" class="text-[#1e1e1e] text-[11px] font-light">
-            80%
-          </span>
-        </div>
-        <p id="soilStatusMessage" class="text-[#8b5e34] text-[12px] font-normal mt-2.5 leading-snug max-w-[190px]">
-          The Moisture of soil is dry please start the pump
-        </p>
-      </div>
 
-      <!-- Soil Level Graphical Bars (Figma node 615:46) -->
-      <div class="absolute right-6 bottom-4 flex items-end gap-1.5 h-[90px]">
-        <div class="w-[11px] h-[32px] bg-[#432818] rounded-[30px]"></div>
-        <div class="w-[11px] h-[32px] bg-[#583101] rounded-[30px]"></div>
-        <div class="w-[11px] h-[32px] bg-[#603808] rounded-[30px]"></div>
-        <div class="w-[11px] h-[32px] bg-[#6f4518] rounded-[30px]"></div>
-        <div id="soilTopBar" class="w-[11px] h-[87px] bg-[#8b5e34] rounded-[30px] transition-all duration-500"></div>
-      </div>
-    </section>
-
-    <!-- Schedules Section -->
-    <div class="mt-5 space-y-4 pb-6 flex-1">
+    <!-- ============================================================== -->
+    <!-- VIEW 1: SCHEDULES SCREEN (Figma node 542:2)                     -->
+    <!-- ============================================================== -->
+    <div id="viewSchedules" class="flex flex-col flex-1">
       
-      <!-- Schedule Card 1: 7:54 AM -->
-      <div class="bg-white h-[82px] rounded-[30px] px-5 py-3 shadow-[2px_2px_6px_rgba(0,0,0,0.12)] flex items-center justify-between">
+      <!-- Soil Moisture Card -->
+      <section class="mt-6 bg-white h-[175px] rounded-[30px] p-5 relative shadow-[2px_2px_8px_rgba(0,0,0,0.08)] flex flex-col justify-between">
         <div>
-          <div class="text-[#1e1e1e] text-[24px] font-medium leading-none">7:54 AM</div>
-          <div class="text-[#1e1e1e] text-[10px] font-normal mt-1 opacity-90">Morning Routine</div>
+          <div class="flex items-center justify-between">
+            <h2 class="text-[#8b5e34] text-[26px] sm:text-[28px] font-medium leading-none">
+              Soil Moisture
+            </h2>
+            <span id="soilPercentage" class="text-[#1e1e1e] text-[11px] font-light">
+              80%
+            </span>
+          </div>
+          <p id="soilStatusMessage" class="text-[#8b5e34] text-[12px] font-normal mt-2.5 leading-snug max-w-[190px]">
+            The Moisture of soil is dry please start the pump
+          </p>
         </div>
-        <div class="flex items-center gap-2">
-          <button class="btnStart bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
-            Start
-          </button>
-          <button class="btnEnd bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
-            End
-          </button>
+
+        <!-- Soil Level Graphical Bars (node 615:46) -->
+        <div class="absolute right-6 bottom-4 flex items-end gap-1.5 h-[90px]">
+          <div class="w-[11px] h-[32px] bg-[#432818] rounded-[30px]"></div>
+          <div class="w-[11px] h-[32px] bg-[#583101] rounded-[30px]"></div>
+          <div class="w-[11px] h-[32px] bg-[#603808] rounded-[30px]"></div>
+          <div class="w-[11px] h-[32px] bg-[#6f4518] rounded-[30px]"></div>
+          <div id="soilTopBar" class="w-[11px] h-[87px] bg-[#8b5e34] rounded-[30px] transition-all duration-500"></div>
         </div>
+      </section>
+
+      <!-- Schedules Section -->
+      <div class="mt-5 space-y-4 pb-6 flex-1">
+        
+        <!-- Schedule Card 1: 7:54 AM -->
+        <div class="bg-white h-[82px] rounded-[30px] px-5 py-3 shadow-[2px_2px_6px_rgba(0,0,0,0.12)] flex items-center justify-between">
+          <div>
+            <div class="text-[#1e1e1e] text-[24px] font-medium leading-none">7:54 AM</div>
+            <div class="text-[#1e1e1e] text-[10px] font-normal mt-1 opacity-90">Morning Routine</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="btnStart bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
+              Start
+            </button>
+            <button class="btnEnd bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
+              End
+            </button>
+          </div>
+        </div>
+
+        <!-- Schedule Card 2: 8:30 AM -->
+        <div class="bg-white h-[82px] rounded-[30px] px-5 py-3 shadow-[2px_2px_6px_rgba(0,0,0,0.12)] flex items-center justify-between">
+          <div>
+            <div class="text-[#1e1e1e] text-[24px] font-medium leading-none">8:30 AM</div>
+            <div class="text-[#1e1e1e] text-[10px] font-normal mt-1 opacity-90">Commute</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="btnStart bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
+              Start
+            </button>
+            <button class="btnEnd bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
+              End
+            </button>
+          </div>
+        </div>
+
+        <!-- Schedule Card 3: 9:00 AM -->
+        <div class="bg-white h-[82px] rounded-[30px] px-5 py-3 shadow-[2px_2px_6px_rgba(0,0,0,0.12)] flex items-center justify-between">
+          <div>
+            <div class="text-[#1e1e1e] text-[24px] font-medium leading-none">9:00 AM</div>
+            <div class="text-[#1e1e1e] text-[10px] font-normal mt-1 opacity-90">Work Hours</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="btnStart bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
+              Start
+            </button>
+            <button class="btnEnd bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
+              End
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ============================================================== -->
+    <!-- VIEW 2: AQUATDS SCREEN (Figma node 568:27)                      -->
+    <!-- ============================================================== -->
+    <div id="viewAquaTDS" class="flex flex-col flex-1 hidden">
+
+      <!-- Metrics Row: TDS Meter Card + Flow Rate Card (Figma node 618:144 & 618:143) -->
+      <div class="mt-6 flex items-center justify-between gap-3">
+        
+        <!-- Card 1: TDS Meter Card (w-[155px] h-[133px] rounded-[20px]) -->
+        <div class="bg-white w-[165px] h-[140px] rounded-[20px] p-3 shadow-[2px_4px_6px_rgba(0,0,0,0.12)] relative flex flex-col items-center justify-center">
+          
+          <!-- Gauge Arc SVG -->
+          <div class="relative w-[110px] h-[95px] flex items-center justify-center">
+            <svg class="w-full h-full" viewBox="0 0 100 100">
+              <circle class="meter-circle-bg" cx="50" cy="50" r="38" stroke-width="7" fill="none" />
+              <circle id="meterCircleFill" class="meter-circle-fill" cx="50" cy="50" r="38" stroke-width="7" fill="none" />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center pt-2">
+              <span id="tdsNumber" class="text-[#fa0606] text-[30px] font-semibold leading-none tracking-tight">
+                880
+              </span>
+              <span class="text-[#007200] text-[12px] font-semibold mt-0.5">
+                PPM
+              </span>
+            </div>
+          </div>
+          
+        </div>
+
+        <!-- Card 2: Flow Rate Card (w-[130px] h-[132px] rounded-[20px]) -->
+        <div class="bg-white w-[155px] h-[140px] rounded-[20px] p-3 shadow-[2px_4px_6px_rgba(0,0,0,0.12)] relative flex flex-col items-center justify-center">
+          
+          <!-- Blue Flow Level Graphical Pill Bars (node 618:142) -->
+          <div class="flex items-center gap-1.5 mb-2">
+            <div class="w-[32px] h-[6px] bg-[#0424f6] rounded-[20px]"></div>
+            <div class="w-[32px] h-[22px] bg-[#0424f6] rounded-[16px]"></div>
+          </div>
+
+          <div id="flowRateNumber" class="text-[#0424f6] text-[25px] font-medium leading-none">
+            1.8
+          </div>
+          <div class="text-[#0424f6] text-[12px] font-medium mt-1">
+            L/s Filtering
+          </div>
+        </div>
+
       </div>
 
-      <!-- Schedule Card 2: 8:30 AM -->
-      <div class="bg-white h-[82px] rounded-[30px] px-5 py-3 shadow-[2px_2px_6px_rgba(0,0,0,0.12)] flex items-center justify-between">
-        <div>
-          <div class="text-[#1e1e1e] text-[24px] font-medium leading-none">8:30 AM</div>
-          <div class="text-[#1e1e1e] text-[10px] font-normal mt-1 opacity-90">Commute</div>
+      <!-- AI Summary Header (node 568:70) -->
+      <div class="mt-8 flex items-center gap-2.5">
+        <div class="w-[24px] h-[24px] rounded-full bg-emerald-600 flex items-center justify-center text-white text-[12px]">
+          🌱
         </div>
-        <div class="flex items-center gap-2">
-          <button class="btnStart bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
-            Start
-          </button>
-          <button class="btnEnd bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
-            End
-          </button>
-        </div>
+        <h3 class="title-gradient text-[20px] font-semibold tracking-tight leading-none">
+          AI Summary
+        </h3>
       </div>
 
-      <!-- Schedule Card 3: 9:00 AM -->
-      <div class="bg-white h-[82px] rounded-[30px] px-5 py-3 shadow-[2px_2px_6px_rgba(0,0,0,0.12)] flex items-center justify-between">
-        <div>
-          <div class="text-[#1e1e1e] text-[24px] font-medium leading-none">9:00 AM</div>
-          <div class="text-[#1e1e1e] text-[10px] font-normal mt-1 opacity-90">Work Hours</div>
-        </div>
-        <div class="flex items-center gap-2">
-          <button class="btnStart bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
-            Start
-          </button>
-          <button class="btnEnd bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
-            End
-          </button>
+      <!-- AI Summary Content Card (node 570:176) -->
+      <div class="mt-3 bg-white min-h-[140px] rounded-[30px] p-5 shadow-[2px_2px_8px_rgba(0,0,0,0.08)] flex flex-col justify-center">
+        <p id="aiSummaryText" class="text-[#1e1e1e] text-[13px] font-normal leading-relaxed">
+          High water salinity (880 PPM) detected. Gemini AI Agent commanded the Smart Diverter Valve to 90° for Bio-Filter purification. Direct crop bypass is locked.
+        </p>
+        <div class="mt-3 flex items-center gap-2">
+          <span class="inline-block w-2 h-2 rounded-full bg-[#007200]"></span>
+          <span id="aiSummarySubtext" class="text-[#007200] text-[11px] font-medium">Bio-Filter Path Active</span>
         </div>
       </div>
 
@@ -163,7 +267,7 @@
   <div id="hwModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-[28px] max-w-sm w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
-        <h3 class="text-[18px] font-semibold text-[#1e1e1e]">Connect Hardware</h3>
+        <h3 class="text-[18px] font-semibold text-[#1e1e1e]">connect Hw</h3>
         <button id="closeHwModal" class="text-gray-400 hover:text-gray-700 text-[20px] leading-none cursor-pointer">&times;</button>
       </div>
       <p class="text-[12px] text-gray-500">
@@ -185,15 +289,44 @@
     </div>
   </div>
 
-  <!-- Hardware Bridge Script -->
+  <!-- Hardware Bridge & Tab Controller Script -->
   <script>
-    // State variables
+    // Navigation Tabs Controller
+    const tabBtnSchedules = document.getElementById('tabBtnSchedules');
+    const tabBtnAquaTDS = document.getElementById('tabBtnAquaTDS');
+    const tabBtnDemo = document.getElementById('tabBtnDemo');
+    const underlineSchedules = document.getElementById('underlineSchedules');
+    const underlineAquaTDS = document.getElementById('underlineAquaTDS');
+    const viewSchedules = document.getElementById('viewSchedules');
+    const viewAquaTDS = document.getElementById('viewAquaTDS');
+
+    function switchTab(tab) {
+      if (tab === 'schedules') {
+        viewSchedules.classList.remove('hidden');
+        viewAquaTDS.classList.add('hidden');
+        underlineSchedules.classList.remove('hidden');
+        underlineAquaTDS.classList.add('hidden');
+      } else if (tab === 'aquatds') {
+        viewSchedules.classList.add('hidden');
+        viewAquaTDS.classList.remove('hidden');
+        underlineSchedules.classList.add('hidden');
+        underlineAquaTDS.classList.remove('hidden');
+      }
+    }
+
+    tabBtnSchedules.addEventListener('click', () => switchTab('schedules'));
+    tabBtnAquaTDS.addEventListener('click', () => switchTab('aquatds'));
+    tabBtnDemo.addEventListener('click', () => {
+      sendCommand("s"); // Trigger 90° diversion demo
+      switchTab('aquatds');
+    });
+
+    // Hardware Bridge State
     let activePort = null;
     let serialReader = null;
     let serialWriter = null;
     let bleDevice = null;
     let bleCharacteristic = null;
-    let isConnected = false;
 
     // UI Elements
     const btnConnectHw = document.getElementById('btnConnectHw');
@@ -205,11 +338,20 @@
     const statusText = document.getElementById('statusText');
     const statusDot = document.getElementById('statusDot');
     const btnRefresh = document.getElementById('btnRefresh');
+    
+    // View 1 (Schedules & Soil)
     const soilPercentage = document.getElementById('soilPercentage');
     const soilStatusMessage = document.getElementById('soilStatusMessage');
     const soilTopBar = document.getElementById('soilTopBar');
     const startBtns = document.querySelectorAll('.btnStart');
     const endBtns = document.querySelectorAll('.btnEnd');
+
+    // View 2 (AquaTDS)
+    const tdsNumber = document.getElementById('tdsNumber');
+    const meterCircleFill = document.getElementById('meterCircleFill');
+    const flowRateNumber = document.getElementById('flowRateNumber');
+    const aiSummaryText = document.getElementById('aiSummaryText');
+    const aiSummarySubtext = document.getElementById('aiSummarySubtext');
 
     function logMsg(msg) {
       hwTerminalLogs.classList.remove('hidden');
@@ -220,7 +362,6 @@
     }
 
     function setConnectedUI(connected, label = "Online & Connected") {
-      isConnected = connected;
       if (connected) {
         statusText.textContent = label;
         statusDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
@@ -230,18 +371,16 @@
       }
     }
 
-    // Modal Controls
-    btnConnectHw.addEventListener('click', () => {
-      hwModal.classList.remove('hidden');
-    });
-    closeHwModal.addEventListener('click', () => {
-      hwModal.classList.add('hidden');
-    });
+    // Modal Handlers
+    btnConnectHw.addEventListener('click', () => hwModal.classList.remove('hidden'));
+    closeHwModal.addEventListener('click', () => hwModal.classList.add('hidden'));
 
     // Handle Incoming Telemetry Packet
     function handleIncomingJson(str) {
       try {
         const data = JSON.parse(str);
+
+        // Update Soil Moisture on View 1
         if (data.moisture !== undefined) {
           soilPercentage.textContent = data.moisture + '%';
           const barHeight = Math.max(15, Math.min(87, (data.moisture / 100) * 87));
@@ -255,8 +394,37 @@
             soilStatusMessage.textContent = "Soil moisture level is optimal for healthy crop growth";
           }
         }
+
+        // Update TDS & Flow on View 2 (node 568:27)
+        if (data.tds !== undefined) {
+          tdsNumber.textContent = data.tds;
+          
+          // Calculate gauge offset (0 to 1000 ppm range)
+          const pct = Math.min(100, (data.tds / 1000) * 100);
+          const offset = 220 - (pct / 100) * 150;
+          meterCircleFill.style.strokeDashoffset = offset;
+
+          if (data.tds >= 490) {
+            tdsNumber.className = "text-[#fa0606] text-[30px] font-semibold leading-none tracking-tight";
+            meterCircleFill.style.stroke = "#fa0606";
+            aiSummaryText.textContent = `High water salinity (${data.tds} PPM) detected. Gemini AI Agent commanded the Smart Diverter Valve to 90° for Bio-Filter purification. Direct crop bypass is locked.`;
+            aiSummarySubtext.textContent = "Bio-Filter Path Active";
+            aiSummarySubtext.className = "text-[#fa0606] text-[11px] font-medium";
+          } else {
+            tdsNumber.className = "text-[#007200] text-[30px] font-semibold leading-none tracking-tight";
+            meterCircleFill.style.stroke = "#007200";
+            aiSummaryText.textContent = `Clean water (${data.tds} PPM) confirmed. Smart Diverter Valve set to 0°. Water routed directly to crop drip lines without filtration needed.`;
+            aiSummarySubtext.textContent = "Clean Direct Crop Path Active";
+            aiSummarySubtext.className = "text-[#007200] text-[11px] font-medium";
+          }
+        }
+
+        if (data.flow !== undefined) {
+          flowRateNumber.textContent = data.flow;
+        }
+
       } catch (e) {
-        // partial string
+        // partial packet
       }
     }
 
@@ -300,7 +468,6 @@
         logMsg("Connected to Serial at 9600 baud!");
         setTimeout(() => hwModal.classList.add('hidden'), 1000);
 
-        // Read Loop
         let buffer = "";
         while (true) {
           const { value, done } = await serialReader.read();
@@ -323,7 +490,7 @@
       }
     });
 
-    // Web Bluetooth Connection (HC-05 BLE)
+    // Web Bluetooth Connection
     btnConnectBle.addEventListener('click', async () => {
       if (!("bluetooth" in navigator)) {
         alert("Web Bluetooth API is supported in Google Chrome.");
@@ -369,14 +536,14 @@
       }
     });
 
-    // Refresh Action (Sends 'r' to trigger 2-minute sampling window)
+    // Refresh Action (Sends 'r' for 2-minute sampling window)
     btnRefresh.addEventListener('click', () => {
       sendCommand("r");
       btnRefresh.classList.add('scale-95');
       setTimeout(() => btnRefresh.classList.remove('scale-95'), 150);
     });
 
-    // Start Buttons (Triggers Irrigation Start / Servo 90°)
+    // Start / End Buttons
     startBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         sendCommand("CMD:VALVE:90");
@@ -385,7 +552,6 @@
       });
     });
 
-    // End Buttons (Triggers Irrigation Stop / Servo 0°)
     endBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         sendCommand("CMD:VALVE:0");
@@ -394,7 +560,6 @@
       });
     });
 
-    // Set initial UI state
     setConnectedUI(false);
   </script>
 </body>
