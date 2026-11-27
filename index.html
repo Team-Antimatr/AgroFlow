@@ -35,9 +35,9 @@
       transform-origin: 50% 50%;
     }
     .meter-circle-fill {
-      stroke: #fa0606;
+      stroke: #9ca3af;
       stroke-dasharray: 220;
-      stroke-dashoffset: 70;
+      stroke-dashoffset: 220;
       transform: rotate(-125deg);
       transform-origin: 50% 50%;
       transition: stroke-dashoffset 0.6s ease, stroke 0.4s ease;
@@ -84,7 +84,7 @@
       </button>
     </nav>
 
-    <!-- Action Buttons Row (Refresh | connect Hw | Online & Connected) -->
+    <!-- Action Buttons Row (Refresh | connect Hw | Status Pill) -->
     <div class="mt-6 flex items-center justify-between gap-2">
       <!-- Refresh Button -->
       <button id="btnRefresh" class="bg-white text-[#007200] text-[12px] font-medium h-[31px] px-4 rounded-[30px] shadow-sm hover:bg-emerald-50 transition active:scale-95 flex items-center justify-center cursor-pointer">
@@ -96,10 +96,10 @@
         connect Hw
       </button>
 
-      <!-- Online & Connected Status Pill -->
-      <div id="statusPill" class="border border-[#007200] bg-white/70 backdrop-blur-sm text-[#007200] text-[12px] font-medium h-[31px] px-3 rounded-[30px] shadow-[0px_1px_4px_rgba(0,0,0,0.15)] flex items-center justify-center gap-1.5 whitespace-nowrap">
-        <span id="statusDot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span id="statusText">Online &amp; Connected</span>
+      <!-- Status Pill (Offline Zero State by Default) -->
+      <div id="statusPill" class="border border-gray-400 bg-white/70 backdrop-blur-sm text-gray-500 text-[12px] font-medium h-[31px] px-3 rounded-[30px] shadow-[0px_1px_4px_rgba(0,0,0,0.15)] flex items-center justify-center gap-1.5 whitespace-nowrap transition-colors">
+        <span id="statusDot" class="w-2 h-2 rounded-full bg-gray-400"></span>
+        <span id="statusText">Offline</span>
       </div>
     </div>
 
@@ -109,29 +109,29 @@
     <!-- ============================================================== -->
     <div id="viewSchedules" class="flex flex-col flex-1">
       
-      <!-- Soil Moisture Card -->
+      <!-- Soil Moisture Card (Zero State when Offline) -->
       <section class="mt-6 bg-white h-[175px] rounded-[30px] p-5 relative shadow-[2px_2px_8px_rgba(0,0,0,0.08)] flex flex-col justify-between">
         <div>
           <div class="flex items-center justify-between">
             <h2 class="text-[#8b5e34] text-[26px] sm:text-[28px] font-medium leading-none">
               Soil Moisture
             </h2>
-            <span id="soilPercentage" class="text-[#1e1e1e] text-[11px] font-light">
-              80%
+            <span id="soilPercentage" class="text-gray-400 text-[13px] font-semibold">
+              0%
             </span>
           </div>
-          <p id="soilStatusMessage" class="text-[#8b5e34] text-[12px] font-normal mt-2.5 leading-snug max-w-[190px]">
-            The Moisture of soil is dry please start the pump
+          <p id="soilStatusMessage" class="text-gray-500 text-[12px] font-normal mt-2.5 leading-snug max-w-[190px]">
+            Hardware offline. Click "connect Hw" to read live soil moisture.
           </p>
         </div>
 
         <!-- Soil Level Graphical Bars (node 615:46) -->
         <div class="absolute right-6 bottom-4 flex items-end gap-1.5 h-[90px]">
-          <div class="w-[11px] h-[32px] bg-[#432818] rounded-[30px]"></div>
-          <div class="w-[11px] h-[32px] bg-[#583101] rounded-[30px]"></div>
-          <div class="w-[11px] h-[32px] bg-[#603808] rounded-[30px]"></div>
-          <div class="w-[11px] h-[32px] bg-[#6f4518] rounded-[30px]"></div>
-          <div id="soilTopBar" class="w-[11px] h-[87px] bg-[#8b5e34] rounded-[30px] transition-all duration-500"></div>
+          <div class="w-[11px] h-[32px] bg-[#432818]/30 rounded-[30px]"></div>
+          <div class="w-[11px] h-[32px] bg-[#583101]/30 rounded-[30px]"></div>
+          <div class="w-[11px] h-[32px] bg-[#603808]/30 rounded-[30px]"></div>
+          <div class="w-[11px] h-[32px] bg-[#6f4518]/30 rounded-[30px]"></div>
+          <div id="soilTopBar" class="w-[11px] h-[15px] bg-[#8b5e34] rounded-[30px] transition-all duration-500"></div>
         </div>
       </section>
 
@@ -195,23 +195,23 @@
     <!-- ============================================================== -->
     <div id="viewAquaTDS" class="flex flex-col flex-1 hidden">
 
-      <!-- Metrics Row: TDS Meter Card + Flow Rate Card (Figma node 618:144 & 618:143) -->
+      <!-- Metrics Row: TDS Meter Card + Flow Rate Card (Zero State by Default) -->
       <div class="mt-6 flex items-center justify-between gap-3">
         
-        <!-- Card 1: TDS Meter Card (w-[155px] h-[133px] rounded-[20px]) -->
+        <!-- Card 1: TDS Meter Card -->
         <div class="bg-white w-[165px] h-[140px] rounded-[20px] p-3 shadow-[2px_4px_6px_rgba(0,0,0,0.12)] relative flex flex-col items-center justify-center">
           
-          <!-- Gauge Arc SVG -->
+          <!-- Gauge Arc SVG (Zero/Empty by Default) -->
           <div class="relative w-[110px] h-[95px] flex items-center justify-center">
             <svg class="w-full h-full" viewBox="0 0 100 100">
               <circle class="meter-circle-bg" cx="50" cy="50" r="38" stroke-width="7" fill="none" />
               <circle id="meterCircleFill" class="meter-circle-fill" cx="50" cy="50" r="38" stroke-width="7" fill="none" />
             </svg>
             <div class="absolute inset-0 flex flex-col items-center justify-center pt-2">
-              <span id="tdsNumber" class="text-[#fa0606] text-[30px] font-semibold leading-none tracking-tight">
-                880
+              <span id="tdsNumber" class="text-gray-400 text-[28px] font-semibold leading-none tracking-tight">
+                0
               </span>
-              <span class="text-[#007200] text-[12px] font-semibold mt-0.5">
+              <span class="text-gray-400 text-[12px] font-semibold mt-0.5">
                 PPM
               </span>
             </div>
@@ -219,26 +219,26 @@
           
         </div>
 
-        <!-- Card 2: Flow Rate Card (w-[130px] h-[132px] rounded-[20px]) -->
+        <!-- Card 2: Flow Rate Card -->
         <div class="bg-white w-[155px] h-[140px] rounded-[20px] p-3 shadow-[2px_4px_6px_rgba(0,0,0,0.12)] relative flex flex-col items-center justify-center">
           
-          <!-- Blue Flow Level Graphical Pill Bars (node 618:142) -->
+          <!-- Blue Flow Level Graphical Pill Bars -->
           <div class="flex items-center gap-1.5 mb-2">
-            <div class="w-[32px] h-[6px] bg-[#0424f6] rounded-[20px]"></div>
-            <div class="w-[32px] h-[22px] bg-[#0424f6] rounded-[16px]"></div>
+            <div class="w-[32px] h-[6px] bg-[#0424f6]/40 rounded-[20px]"></div>
+            <div class="w-[32px] h-[22px] bg-[#0424f6]/40 rounded-[16px]"></div>
           </div>
 
-          <div id="flowRateNumber" class="text-[#0424f6] text-[25px] font-medium leading-none">
-            1.8
+          <div id="flowRateNumber" class="text-gray-400 text-[25px] font-medium leading-none">
+            0.0
           </div>
-          <div class="text-[#0424f6] text-[12px] font-medium mt-1">
+          <div class="text-gray-400 text-[12px] font-medium mt-1">
             L/s Filtering
           </div>
         </div>
 
       </div>
 
-      <!-- AI Summary Header (node 568:70) -->
+      <!-- AI Summary Header -->
       <div class="mt-8 flex items-center gap-2.5">
         <div class="w-[24px] h-[24px] rounded-full bg-emerald-600 flex items-center justify-center text-white text-[12px]">
           🌱
@@ -248,14 +248,14 @@
         </h3>
       </div>
 
-      <!-- AI Summary Content Card (node 570:176) -->
+      <!-- AI Summary Content Card (Zero State by Default) -->
       <div class="mt-3 bg-white min-h-[140px] rounded-[30px] p-5 shadow-[2px_2px_8px_rgba(0,0,0,0.08)] flex flex-col justify-center">
-        <p id="aiSummaryText" class="text-[#1e1e1e] text-[13px] font-normal leading-relaxed">
-          High water salinity (880 PPM) detected. Gemini AI Agent commanded the Smart Diverter Valve to 90° for Bio-Filter purification. Direct crop bypass is locked.
+        <p id="aiSummaryText" class="text-gray-500 text-[13px] font-normal leading-relaxed">
+          Hardware offline. Please click "connect Hw" above to start live telemetry stream and automated Gemini AI crop analysis.
         </p>
         <div class="mt-3 flex items-center gap-2">
-          <span class="inline-block w-2 h-2 rounded-full bg-[#007200]"></span>
-          <span id="aiSummarySubtext" class="text-[#007200] text-[11px] font-medium">Bio-Filter Path Active</span>
+          <span id="aiSummaryDot" class="inline-block w-2 h-2 rounded-full bg-gray-400"></span>
+          <span id="aiSummarySubtext" class="text-gray-400 text-[11px] font-medium">System Idle / Offline</span>
         </div>
       </div>
 
@@ -335,6 +335,7 @@
     const btnConnectSerial = document.getElementById('btnConnectSerial');
     const btnConnectBle = document.getElementById('btnConnectBle');
     const hwTerminalLogs = document.getElementById('hwTerminalLogs');
+    const statusPill = document.getElementById('statusPill');
     const statusText = document.getElementById('statusText');
     const statusDot = document.getElementById('statusDot');
     const btnRefresh = document.getElementById('btnRefresh');
@@ -351,6 +352,7 @@
     const meterCircleFill = document.getElementById('meterCircleFill');
     const flowRateNumber = document.getElementById('flowRateNumber');
     const aiSummaryText = document.getElementById('aiSummaryText');
+    const aiSummaryDot = document.getElementById('aiSummaryDot');
     const aiSummarySubtext = document.getElementById('aiSummarySubtext');
 
     function logMsg(msg) {
@@ -363,11 +365,31 @@
 
     function setConnectedUI(connected, label = "Online & Connected") {
       if (connected) {
+        statusPill.className = "border border-[#007200] bg-white/70 backdrop-blur-sm text-[#007200] text-[12px] font-medium h-[31px] px-3 rounded-[30px] shadow-[0px_1px_4px_rgba(0,0,0,0.15)] flex items-center justify-center gap-1.5 whitespace-nowrap transition-colors";
         statusText.textContent = label;
         statusDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
       } else {
+        statusPill.className = "border border-gray-400 bg-white/70 backdrop-blur-sm text-gray-500 text-[12px] font-medium h-[31px] px-3 rounded-[30px] shadow-[0px_1px_4px_rgba(0,0,0,0.15)] flex items-center justify-center gap-1.5 whitespace-nowrap transition-colors";
         statusText.textContent = "Offline";
         statusDot.className = "w-2 h-2 rounded-full bg-gray-400";
+        
+        // Zero state when offline
+        soilPercentage.textContent = "0%";
+        soilPercentage.className = "text-gray-400 text-[13px] font-semibold";
+        soilStatusMessage.textContent = "Hardware offline. Click \"connect Hw\" to read live soil moisture.";
+        soilTopBar.style.height = "15px";
+
+        tdsNumber.textContent = "0";
+        tdsNumber.className = "text-gray-400 text-[28px] font-semibold leading-none tracking-tight";
+        meterCircleFill.style.stroke = "#9ca3af";
+        meterCircleFill.style.strokeDashoffset = "220";
+        flowRateNumber.textContent = "0.0";
+        flowRateNumber.className = "text-gray-400 text-[25px] font-medium leading-none";
+
+        aiSummaryText.textContent = "Hardware offline. Please click \"connect Hw\" above to start live telemetry stream and automated Gemini AI crop analysis.";
+        aiSummaryDot.className = "inline-block w-2 h-2 rounded-full bg-gray-400";
+        aiSummarySubtext.textContent = "System Idle / Offline";
+        aiSummarySubtext.className = "text-gray-400 text-[11px] font-medium";
       }
     }
 
@@ -375,7 +397,7 @@
     btnConnectHw.addEventListener('click', () => hwModal.classList.remove('hidden'));
     closeHwModal.addEventListener('click', () => hwModal.classList.add('hidden'));
 
-    // Handle Incoming Telemetry Packet
+    // Handle Incoming Live Telemetry Packet
     function handleIncomingJson(str) {
       try {
         const data = JSON.parse(str);
@@ -383,6 +405,7 @@
         // Update Soil Moisture on View 1
         if (data.moisture !== undefined) {
           soilPercentage.textContent = data.moisture + '%';
+          soilPercentage.className = "text-[#1e1e1e] text-[11px] font-light";
           const barHeight = Math.max(15, Math.min(87, (data.moisture / 100) * 87));
           soilTopBar.style.height = barHeight + 'px';
 
@@ -395,7 +418,7 @@
           }
         }
 
-        // Update TDS & Flow on View 2 (node 568:27)
+        // Update TDS & Flow on View 2
         if (data.tds !== undefined) {
           tdsNumber.textContent = data.tds;
           
@@ -408,12 +431,14 @@
             tdsNumber.className = "text-[#fa0606] text-[30px] font-semibold leading-none tracking-tight";
             meterCircleFill.style.stroke = "#fa0606";
             aiSummaryText.textContent = `High water salinity (${data.tds} PPM) detected. Gemini AI Agent commanded the Smart Diverter Valve to 90° for Bio-Filter purification. Direct crop bypass is locked.`;
+            aiSummaryDot.className = "inline-block w-2 h-2 rounded-full bg-[#fa0606]";
             aiSummarySubtext.textContent = "Bio-Filter Path Active";
             aiSummarySubtext.className = "text-[#fa0606] text-[11px] font-medium";
           } else {
             tdsNumber.className = "text-[#007200] text-[30px] font-semibold leading-none tracking-tight";
             meterCircleFill.style.stroke = "#007200";
             aiSummaryText.textContent = `Clean water (${data.tds} PPM) confirmed. Smart Diverter Valve set to 0°. Water routed directly to crop drip lines without filtration needed.`;
+            aiSummaryDot.className = "inline-block w-2 h-2 rounded-full bg-[#007200]";
             aiSummarySubtext.textContent = "Clean Direct Crop Path Active";
             aiSummarySubtext.className = "text-[#007200] text-[11px] font-medium";
           }
@@ -421,6 +446,7 @@
 
         if (data.flow !== undefined) {
           flowRateNumber.textContent = data.flow;
+          flowRateNumber.className = "text-[#0424f6] text-[25px] font-medium leading-none";
         }
 
       } catch (e) {
@@ -560,6 +586,7 @@
       });
     });
 
+    // Set Zero State initially on startup
     setConnectedUI(false);
   </script>
 </body>
