@@ -2,7 +2,7 @@
 #include <SoftwareSerial.h>
 
 // =========================================================================
-// AgroFlow AI — Version 2.3 (10-Second Smart Sampling & Live Soil Edition)
+// AgroFlow AI — Version 2.4 (2-Minute Exhibition Sampling & Live Soil)
 // =========================================================================
 
 const int PIN_TDS   = A0; // TDS Sensor
@@ -21,10 +21,10 @@ bool servoMoving               = false;
 unsigned long servoMoveEndTime = 0;
 unsigned long lastTelemetryTime = 0;
 
-// --- 10-SECOND SAMPLING & LOCK ENGINE ---
-bool isSampling            = true;          // Shuru me 10 sec sample karega
+// --- 2-MINUTE (120 SECONDS) SAMPLING ENGINE ---
+bool isSampling            = true;
 unsigned long sampleStartTime = 0;
-const unsigned long SAMPLE_DURATION = 10000; // 10 seconds sampling window
+const unsigned long SAMPLE_DURATION = 120000; // 2 Minutes = 120,000 ms
 int lockedTDS              = 0;
 bool isLocked              = false;
 
@@ -47,24 +47,23 @@ void broadcastMessage(const String& msg) {
   btSerial.println(msg);
 }
 
-// Reset function: Starts fresh 10-second sampling
+// Start fresh 2-minute sampling window
 void startSampling() {
   isSampling = true;
   isLocked = false;
   sampleStartTime = millis();
   moveServoSmoothly(0);
-  broadcastMessage(F("{\"status\":\"SAMPLING_STARTED\",\"duration\":10}"));
+  broadcastMessage(F("{\"status\":\"SAMPLING_STARTED\",\"duration_seconds\":120}"));
 }
 
 void processCommand(String cmd) {
   cmd.trim();
   if (cmd.length() == 0) return;
 
-  // 'r' ya 'R' = Refresh / Resample for 10 seconds!
+  // 'r' = Refresh / Catch Again for 2 minutes!
   if (cmd == "r" || cmd == "R" || cmd == "CMD:REFRESH" || cmd == "CMD:RESET") {
     startSampling();
   }
-  // Manual override 90°
   else if (cmd == "s" || cmd == "S" || cmd == "CMD:VALVE:90") {
     isSampling = false;
     isLocked = true;
@@ -72,7 +71,6 @@ void processCommand(String cmd) {
     moveServoSmoothly(90);
     broadcastMessage(F("{\"ack\":\"VALVE\",\"angle\":90,\"path\":\"BIO_FILTER\"}"));
   }
-  // Manual override 0°
   else if (cmd == "c" || cmd == "C" || cmd == "CMD:VALVE:0") {
     isSampling = false;
     isLocked = true;
@@ -88,17 +86,14 @@ void setup() {
   Serial.setTimeout(50);
   btSerial.setTimeout(50);
 
-  // Initial Home 0°
   moveServoSmoothly(0);
-
-  // Start initial 10-second sampling window
-  startSampling();
+  startSampling(); // Startup par 2 minute sampling chalu
 }
 
 void loop() {
   unsigned long now = millis();
 
-  // 1. Process Inbound Commands
+  // 1. Inbound Commands
   if (Serial.available() > 0) {
     String cmd = Serial.readStringUntil('\n');
     processCommand(cmd);
@@ -114,35 +109,32 @@ void loop() {
     servoMoving = false;
   }
 
-  // 3. SOIL MOISTURE: 100% ALWAYS LIVE & NEVER LOCKED
-  // (Yeh lagatar real-time mitti padhta rahega aur vary karega)
+  // 3. SOIL MOISTURE: 100% ALWAYS LIVE & NEVER LOCKED (VARY HOTA RAHEGA)
   int rawSoil = analogRead(PIN_SOIL);
   int soilMoisturePct = map(rawSoil, 650, 300, 0, 100);
   soilMoisturePct = constrain(soilMoisturePct, 0, 100);
 
-  // 4. TDS SENSING & 10-SECOND LOCK LOGIC
+  // 4. TDS 2-MINUTE SAMPLING & LOCK
   int currentTDS = 0;
   int secondsLeft = 0;
 
   if (isSampling) {
-    // 10-Second Catching Window Active
     unsigned long elapsed = now - sampleStartTime;
     if (elapsed < SAMPLE_DURATION) {
-      secondsLeft = (SAMPLE_DURATION - elapsed) / 1000 + 1;
+      secondsLeft = (SAMPLE_DURATION - elapsed) / 1000 + 1; // 120s countdown
       
-      // Live reading during sampling
       int rawTDS = analogRead(PIN_TDS);
       currentTDS = map(rawTDS, 0, 1023, 0, 1500);
       if (currentTDS < 0) currentTDS = 0;
 
-      // Real-time servo tracking during sampling
+      // Live tracking during 2-minute window
       if (currentTDS >= TDS_CUTOFF) {
         moveServoSmoothly(90);
       } else {
         moveServoSmoothly(0);
       }
     } else {
-      // 10 Seconds Completed -> LOCK THE TDS & SERVO NOW!
+      // 2 Minutes Finished -> LOCK TDS & SERVO!
       isSampling = false;
       isLocked = true;
       int rawTDS = analogRead(PIN_TDS);
@@ -151,18 +143,17 @@ void loop() {
 
       currentTDS = lockedTDS;
 
-      // Lock Servo Position
       if (lockedTDS >= TDS_CUTOFF) {
-        moveServoSmoothly(90); // Lock at 90° (Filter)
+        moveServoSmoothly(90); // 90° Filter Locked
       } else {
-        moveServoSmoothly(0);  // Lock at 0° (Clean)
+        moveServoSmoothly(0);  // 0° Clean Locked
       }
 
       broadcastMessage(String("{\"alert\":\"TDS_LOCKED\",\"tds\":") + String(lockedTDS) + 
                        ",\"servo\":" + String(currentServoAngle) + "}");
     }
   } else {
-    // Already Locked State: TDS & Servo remain frozen at their evaluated state
+    // Locked State
     currentTDS = lockedTDS;
     if (lockedTDS >= TDS_CUTOFF) {
       moveServoSmoothly(90);
@@ -171,7 +162,7 @@ void loop() {
     }
   }
 
-  // 5. Broadcast 1-second Telemetry
+  // 5. Telemetry Broadcast (Every 1 Second)
   if (now - lastTelemetryTime >= 1000) {
     lastTelemetryTime = now;
     int filterActive = (currentServoAngle == 90) ? 1 : 0;
