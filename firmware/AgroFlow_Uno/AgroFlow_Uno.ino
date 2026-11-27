@@ -2,7 +2,7 @@
 #include <SoftwareSerial.h>
 
 // =========================================================================
-// AgroFlow AI — Version 2.4 (2-Minute Exhibition Sampling & Live Soil)
+// AgroFlow AI — Version 2.5 (Decisive Actuation at Sampling End)
 // =========================================================================
 
 const int PIN_TDS   = A0; // TDS Sensor
@@ -47,13 +47,13 @@ void broadcastMessage(const String& msg) {
   btSerial.println(msg);
 }
 
-// Start fresh 2-minute sampling window
+// Start fresh 2-minute sampling window (Servo stays resting at 0°)
 void startSampling() {
   isSampling = true;
   isLocked = false;
   sampleStartTime = millis();
-  moveServoSmoothly(0);
-  broadcastMessage(F("{\"status\":\"SAMPLING_STARTED\",\"duration_seconds\":120}"));
+  moveServoSmoothly(0); // Sampling ke dauran servo 0° par shaant rahega
+  broadcastMessage(F("{\"status\":\"SAMPLING_STARTED\",\"duration_seconds\":120,\"servo\":\"IDLE_0\"}"));
 }
 
 void processCommand(String cmd) {
@@ -114,7 +114,7 @@ void loop() {
   int soilMoisturePct = map(rawSoil, 650, 300, 0, 100);
   soilMoisturePct = constrain(soilMoisturePct, 0, 100);
 
-  // 4. TDS 2-MINUTE SAMPLING & LOCK
+  // 4. TDS SAMPLING & DECISIVE SERVO MOVEMENT AT THE END
   int currentTDS = 0;
   int secondsLeft = 0;
 
@@ -123,18 +123,16 @@ void loop() {
     if (elapsed < SAMPLE_DURATION) {
       secondsLeft = (SAMPLE_DURATION - elapsed) / 1000 + 1; // 120s countdown
       
+      // Live read for display only
       int rawTDS = analogRead(PIN_TDS);
       currentTDS = map(rawTDS, 0, 1023, 0, 1500);
       if (currentTDS < 0) currentTDS = 0;
 
-      // Live tracking during 2-minute window
-      if (currentTDS >= TDS_CUTOFF) {
-        moveServoSmoothly(90);
-      } else {
-        moveServoSmoothly(0);
-      }
+      // SAMPLING CHALTE WAQT SERVO BILKUL NAHI HILEGA!
+      // (Servo 0° par chup-chap khada rahega)
+      
     } else {
-      // 2 Minutes Finished -> LOCK TDS & SERVO!
+      // 2 MINUTES POORE HOGAYE -> AB SERVO EK HI BAAR FINAL ACTION LEGA!
       isSampling = false;
       isLocked = true;
       int rawTDS = analogRead(PIN_TDS);
@@ -143,23 +141,19 @@ void loop() {
 
       currentTDS = lockedTDS;
 
+      // FINAL EVALUATION & SINGLE DECISIVE MOVE:
       if (lockedTDS >= TDS_CUTOFF) {
-        moveServoSmoothly(90); // 90° Filter Locked
+        moveServoSmoothly(90); // Ganda paani -> Ek baar me 90° Filter!
       } else {
-        moveServoSmoothly(0);  // 0° Clean Locked
+        moveServoSmoothly(0);  // Saaf paani -> 0° par hi rahega!
       }
 
-      broadcastMessage(String("{\"alert\":\"TDS_LOCKED\",\"tds\":") + String(lockedTDS) + 
+      broadcastMessage(String("{\"alert\":\"DECISION_COMPLETE\",\"final_tds\":") + String(lockedTDS) + 
                        ",\"servo\":" + String(currentServoAngle) + "}");
     }
   } else {
-    // Locked State
+    // Locked State: Servo & TDS freeze at their final decided position
     currentTDS = lockedTDS;
-    if (lockedTDS >= TDS_CUTOFF) {
-      moveServoSmoothly(90);
-    } else {
-      moveServoSmoothly(0);
-    }
   }
 
   // 5. Telemetry Broadcast (Every 1 Second)
