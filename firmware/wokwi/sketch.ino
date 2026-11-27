@@ -2,40 +2,34 @@
 #include <SoftwareSerial.h>
 
 // =========================================================================
-// AgroFlow AI — Smart Irrigation & Precision Diversion System
-// Version 2.1 (Rock-Solid 490 PPM Binary Threshold)
+// AgroFlow AI — Version 2.3 (10-Second Smart Sampling & Live Soil Edition)
 // =========================================================================
 
-// --- Pin Definitions ---
-const int PIN_TDS   = A0; // Analog TDS Sensor (Water Container / Line)
-const int PIN_SOIL  = A1; // Capacitive Soil Moisture Sensor (Soil Tray)
-const int PIN_SERVO = 3;  // SG90 Servo Diverter Valve (PWM)
-const int PIN_BT_RX = 10; // Connect to HC-05 TX
-const int PIN_BT_TX = 11; // Connect to HC-05 RX
+const int PIN_TDS   = A0; // TDS Sensor
+const int PIN_SOIL  = A1; // Soil Moisture Sensor (ALWAYS 100% LIVE)
+const int PIN_SERVO = 3;  // SG90 Servo
+const int PIN_BT_RX = 10; // HC-05 TX
+const int PIN_BT_TX = 11; // HC-05 RX
 
-// Bluetooth Serial Port (9600 Baud)
 SoftwareSerial btSerial(PIN_BT_RX, PIN_BT_TX);
 
-// --- Operational Threshold ---
-// <490 PPM = 0° (Rock-Solid Clean Crop Path)
-// >=490 PPM = 90° (Instant Direct to Bio-Filter)
 const int TDS_CUTOFF = 490;
 
-// --- Servo & Valve State ---
 Servo diverterServo;
 int currentServoAngle          = -1;
 bool servoMoving               = false;
 unsigned long servoMoveEndTime = 0;
-bool valveManualOverride       = false;
-
-// Non-blocking Telemetry Timing
 unsigned long lastTelemetryTime = 0;
-const unsigned long TELEMETRY_INTERVAL = 1000; // 1-second packet stream
 
-// --- Smooth Servo Movement with Auto-Detach ---
-// Once target angle is reached, PWM detaches so the servo is completely rock-solid with ZERO jitter
+// --- 10-SECOND SAMPLING & LOCK ENGINE ---
+bool isSampling            = true;          // Shuru me 10 sec sample karega
+unsigned long sampleStartTime = 0;
+const unsigned long SAMPLE_DURATION = 10000; // 10 seconds sampling window
+int lockedTDS              = 0;
+bool isLocked              = false;
+
 void moveServoSmoothly(int targetAngle) {
-  targetAngle = (targetAngle >= 45) ? 90 : 0; // Strict binary lock: only 0° or 90°
+  targetAngle = (targetAngle >= 45) ? 90 : 0;
   
   if (targetAngle != currentServoAngle) {
     currentServoAngle = targetAngle;
@@ -43,38 +37,48 @@ void moveServoSmoothly(int targetAngle) {
       diverterServo.attach(PIN_SERVO);
     }
     diverterServo.write(currentServoAngle);
-    servoMoveEndTime = millis() + 500; // 500ms rotation window
+    servoMoveEndTime = millis() + 500;
     servoMoving = true;
   }
 }
 
-// Send formatted messages to both USB Serial and Bluetooth
 void broadcastMessage(const String& msg) {
   Serial.println(msg);
   btSerial.println(msg);
 }
 
-// --- Process Inbound Commands (Serial & Bluetooth) ---
+// Reset function: Starts fresh 10-second sampling
+void startSampling() {
+  isSampling = true;
+  isLocked = false;
+  sampleStartTime = millis();
+  moveServoSmoothly(0);
+  broadcastMessage(F("{\"status\":\"SAMPLING_STARTED\",\"duration\":10}"));
+}
+
 void processCommand(String cmd) {
   cmd.trim();
   if (cmd.length() == 0) return;
 
-  // 1. Manual: 90° (Bio-Filter)
-  if (cmd == "CMD:VALVE:90" || cmd == "s" || cmd == "S" || cmd == "90") {
-    valveManualOverride = true;
+  // 'r' ya 'R' = Refresh / Resample for 10 seconds!
+  if (cmd == "r" || cmd == "R" || cmd == "CMD:REFRESH" || cmd == "CMD:RESET") {
+    startSampling();
+  }
+  // Manual override 90°
+  else if (cmd == "s" || cmd == "S" || cmd == "CMD:VALVE:90") {
+    isSampling = false;
+    isLocked = true;
+    lockedTDS = 650;
     moveServoSmoothly(90);
     broadcastMessage(F("{\"ack\":\"VALVE\",\"angle\":90,\"path\":\"BIO_FILTER\"}"));
-
-  // 2. Manual: 0° (Direct Clean Crop Path)
-  } else if (cmd == "CMD:VALVE:0" || cmd == "c" || cmd == "C" || cmd == "0") {
-    valveManualOverride = true;
+  }
+  // Manual override 0°
+  else if (cmd == "c" || cmd == "C" || cmd == "CMD:VALVE:0") {
+    isSampling = false;
+    isLocked = true;
+    lockedTDS = 45;
     moveServoSmoothly(0);
     broadcastMessage(F("{\"ack\":\"VALVE\",\"angle\":0,\"path\":\"DIRECT_CROP\"}"));
-
-  // 3. Return to Automatic TDS Tracking Mode
-  } else if (cmd == "CMD:AUTO" || cmd == "CMD:VALVE:AUTO" || cmd == "a" || cmd == "A") {
-    valveManualOverride = false;
-    broadcastMessage(F("{\"ack\":\"AUTO_MODE\",\"status\":\"TRACKING_TDS\"}"));
   }
 }
 
@@ -84,65 +88,100 @@ void setup() {
   Serial.setTimeout(50);
   btSerial.setTimeout(50);
 
-  // Home Servo strictly at 0° on startup
+  // Initial Home 0°
   moveServoSmoothly(0);
 
-  broadcastMessage(F("{\"status\":\"AgroFlow AI Online\",\"threshold\":490,\"edition\":\"Rock-Solid v2.1\"}"));
+  // Start initial 10-second sampling window
+  startSampling();
 }
 
 void loop() {
   unsigned long now = millis();
 
-  // 1. Read Serial Commands (Laptop USB)
+  // 1. Process Inbound Commands
   if (Serial.available() > 0) {
     String cmd = Serial.readStringUntil('\n');
     processCommand(cmd);
   }
-
-  // 2. Read Bluetooth Commands (Mobile / Web App)
   if (btSerial.available() > 0) {
     String cmd = btSerial.readStringUntil('\n');
     processCommand(cmd);
   }
 
-  // 3. Auto-detach Servo after rotation (Zero hum, zero jitter, locked in place)
+  // 2. Auto-detach Servo (Zero hum & power safe)
   if (servoMoving && now >= servoMoveEndTime) {
     diverterServo.detach();
     servoMoving = false;
   }
 
-  // 4. Read Analog Sensors
-  int rawTDS  = analogRead(PIN_TDS);
+  // 3. SOIL MOISTURE: 100% ALWAYS LIVE & NEVER LOCKED
+  // (Yeh lagatar real-time mitti padhta rahega aur vary karega)
   int rawSoil = analogRead(PIN_SOIL);
-
-  // Conversion: TDS 0-1023 -> 0-1500 PPM approx
-  int tdsPPM = map(rawTDS, 0, 1023, 0, 1500);
-  if (tdsPPM < 0) tdsPPM = 0;
-
-  // Conversion: Capacitive Soil Moisture
   int soilMoisturePct = map(rawSoil, 650, 300, 0, 100);
   soilMoisturePct = constrain(soilMoisturePct, 0, 100);
 
-  // 5. ROCK-SOLID CUTOFF LOGIC (Aapka Exact Niyam)
-  // TDS >= 490 -> Turant 90° (Bio-filter)
-  // TDS < 490  -> Rock-solid 0° (Direct khet me)
-  if (!valveManualOverride) {
-    if (tdsPPM >= TDS_CUTOFF) {
-      moveServoSmoothly(90); // Ganda paani -> 90° Filter
+  // 4. TDS SENSING & 10-SECOND LOCK LOGIC
+  int currentTDS = 0;
+  int secondsLeft = 0;
+
+  if (isSampling) {
+    // 10-Second Catching Window Active
+    unsigned long elapsed = now - sampleStartTime;
+    if (elapsed < SAMPLE_DURATION) {
+      secondsLeft = (SAMPLE_DURATION - elapsed) / 1000 + 1;
+      
+      // Live reading during sampling
+      int rawTDS = analogRead(PIN_TDS);
+      currentTDS = map(rawTDS, 0, 1023, 0, 1500);
+      if (currentTDS < 0) currentTDS = 0;
+
+      // Real-time servo tracking during sampling
+      if (currentTDS >= TDS_CUTOFF) {
+        moveServoSmoothly(90);
+      } else {
+        moveServoSmoothly(0);
+      }
     } else {
-      moveServoSmoothly(0);  // Saaf paani -> 0° Fix
+      // 10 Seconds Completed -> LOCK THE TDS & SERVO NOW!
+      isSampling = false;
+      isLocked = true;
+      int rawTDS = analogRead(PIN_TDS);
+      lockedTDS = map(rawTDS, 0, 1023, 0, 1500);
+      if (lockedTDS < 0) lockedTDS = 0;
+
+      currentTDS = lockedTDS;
+
+      // Lock Servo Position
+      if (lockedTDS >= TDS_CUTOFF) {
+        moveServoSmoothly(90); // Lock at 90° (Filter)
+      } else {
+        moveServoSmoothly(0);  // Lock at 0° (Clean)
+      }
+
+      broadcastMessage(String("{\"alert\":\"TDS_LOCKED\",\"tds\":") + String(lockedTDS) + 
+                       ",\"servo\":" + String(currentServoAngle) + "}");
+    }
+  } else {
+    // Already Locked State: TDS & Servo remain frozen at their evaluated state
+    currentTDS = lockedTDS;
+    if (lockedTDS >= TDS_CUTOFF) {
+      moveServoSmoothly(90);
+    } else {
+      moveServoSmoothly(0);
     }
   }
 
-  // 6. Broadcast Telemetry Packet every 1 second
-  if (now - lastTelemetryTime >= TELEMETRY_INTERVAL) {
+  // 5. Broadcast 1-second Telemetry
+  if (now - lastTelemetryTime >= 1000) {
     lastTelemetryTime = now;
     int filterActive = (currentServoAngle == 90) ? 1 : 0;
 
-    String packet = String("{\"tds\":") + String(tdsPPM) +
+    String packet = String("{\"tds\":") + String(currentTDS) +
                     ",\"moisture\":" + String(soilMoisturePct) +
                     ",\"servo\":" + String(currentServoAngle) +
                     ",\"filter\":" + String(filterActive) +
+                    ",\"sampling\":" + String(isSampling ? secondsLeft : 0) +
+                    ",\"locked\":" + String(isLocked ? 1 : 0) +
                     ",\"flow\":1.8}";
     broadcastMessage(packet);
   }
