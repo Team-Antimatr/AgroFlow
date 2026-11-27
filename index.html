@@ -1,1215 +1,401 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-  <meta content="mobile_tab" name="shell-type"/>
-  <title>AquaFlow AI — Smart Water Filtration & Precision Fertigation</title>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
-  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AquaFlow AI</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "primary": "#7edc6b",
-            "primary-container": "#0e730b",
-            "on-primary": "#003a01",
-            "on-primary-container": "#96f681",
-            "surface": "#0e730b",
-            "on-surface": "#ffffff",
-            "surface-container": "#1d201f",
-            "surface-container-highest": "#323534",
-            "surface-card": "#ffffff",
-            "text-dark": "#0e730b",
-            "text-muted": "#616161",
-            "accent-blue": "#0288D1",
-            "alert-red": "#D32F2F",
-            "warning-amber": "#FBC02D",
-            "soil-brown": "#6D4C41"
-          },
-          fontFamily: {
-            sans: ["Google Sans Flex", "Inter", "sans-serif"]
-          }
-        }
-      }
-    };
-  </script>
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    @layer base {
-      html, body {
-        width: 100%;
-        margin: 0;
-        padding: 0;
-        background-color: #0e730b;
-        color: #ffffff;
-        overscroll-behavior: none;
-        -webkit-tap-highlight-color: transparent;
-      }
-      .pb-safe { padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 16px)); }
-      .pt-safe { padding-top: max(0.5rem, env(safe-area-inset-top, 8px)); }
+    body {
+      font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
-    ::-webkit-scrollbar { display: none; }
-    
-    .tab-content {
-      animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    .custom-gradient-bg {
+      background: linear-gradient(to left, #ffffff, #2dc653);
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .active-nav-tab {
-      color: #ffffff !important;
-      font-weight: 700 !important;
-      position: relative;
-    }
-    .active-nav-tab::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background-color: #ffffff;
-      border-radius: 3px 3px 0 0;
+    .title-gradient {
+      background: linear-gradient(to right, #1e1e1e, #007200);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
   </style>
 </head>
+<body class="p-0 sm:p-4">
 
-<body class="bg-surface font-sans text-on-surface flex flex-col min-h-screen">
+  <!-- Mobile Screen Frame (Figma node 542:2 - 402px x 874px) -->
+  <main class="w-full max-w-[402px] min-h-[874px] custom-gradient-bg sm:rounded-[30px] overflow-hidden relative shadow-2xl flex flex-col px-[28px] py-[36px]">
 
-  <!-- ========================================================================= -->
-  <!-- FIXED TOP HEADER WITH APP SHELL & 3 NAVIGATION TABS                      -->
-  <!-- ========================================================================= -->
-  <header class="fixed top-0 left-0 right-0 z-50 bg-[#0b6309] shadow-md pt-safe">
-    <div class="max-w-md mx-auto px-4 flex flex-col justify-between h-[116px]">
-      
-      <!-- Top Branding Row -->
-      <div class="flex items-center justify-between pt-2">
-        <div class="flex flex-col">
-          <div class="flex items-center gap-2">
-            <h1 class="text-xl font-extrabold tracking-tight text-white leading-none">AgroFlow AI</h1>
-            <span class="bg-[#7edc6b] text-[#003a01] text-[10px] font-black uppercase px-1.5 py-0.5 rounded tracking-wide">PRO</span>
-          </div>
-          <p class="text-xs text-[#96f681] font-medium mt-1">Smart Water Filtration &amp; Precision Fertigation</p>
-        </div>
-        <div class="w-8 h-8 rounded-full bg-[#7edc6b] flex items-center justify-center shrink-0 shadow-inner">
-          <span class="material-symbols-outlined text-[#003a01] text-[18px]">psychology</span>
-        </div>
+    <!-- Header Section -->
+    <header class="pt-6">
+      <h1 class="title-gradient text-[30px] font-semibold tracking-tight leading-none mb-2">
+        AquaFlow AI
+      </h1>
+      <p class="text-[12px] font-medium text-black leading-tight">
+        Smart Water Filtration &amp; Precision Fertigation Unit
+      </p>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="mt-8 flex items-center gap-7 relative pb-2 border-b border-transparent">
+      <div class="relative">
+        <button id="tabSchedules" class="text-[12px] font-medium text-black cursor-pointer">Schedules</button>
+        <div class="absolute -bottom-2 left-0 w-full h-[1.5px] bg-[#007200]"></div>
       </div>
+      <button id="tabAquaTDS" class="text-[12px] font-medium text-black flex items-center gap-1 cursor-pointer">
+        AquaTDS
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-[#007200] opacity-80"></span>
+      </button>
+      <button id="tabDemo" class="text-[12px] font-medium text-black cursor-pointer">
+        Demo
+      </button>
+    </nav>
 
-      <!-- 3 Main Navigation Tabs -->
-      <nav class="flex items-end justify-between h-11 border-b border-white/10" id="main-nav">
-        <!-- Tab 1: Schedules -->
-        <button type="button" data-tab-target="schedules-view" 
-                class="tab-btn active-nav-tab relative flex items-center justify-center h-full px-3 text-xs tracking-wider uppercase transition-all text-white font-bold select-none focus:outline-none">
-          <span class="pb-2">Schedules</span>
-        </button>
+    <!-- Action Buttons Row -->
+    <div class="mt-6 flex items-center justify-between gap-2">
+      <!-- Refresh Button -->
+      <button id="btnRefresh" class="bg-white text-[#007200] text-[12px] font-medium h-[31px] px-4 rounded-[30px] shadow-sm hover:bg-emerald-50 transition active:scale-95 flex items-center justify-center cursor-pointer">
+        Refresh
+      </button>
 
-        <!-- Tab 2: AquaTDS -->
-        <button type="button" data-tab-target="aquatds-view" 
-                class="tab-btn relative flex items-center justify-center gap-1 h-full px-3 text-xs tracking-wider uppercase transition-all text-[#96f681]/80 select-none focus:outline-none">
-          <span class="pb-2 flex items-center gap-1">
-            AquaTDS
-            <span class="material-symbols-outlined text-[#FBC02D] text-[15px]">auto_awesome</span>
-          </span>
-        </button>
+      <!-- Connect Hw Button (Exact wording requested by user) -->
+      <button id="btnConnectHw" class="bg-white text-[#007200] text-[12px] font-medium h-[31px] px-3.5 rounded-[30px] shadow-sm hover:bg-emerald-50 transition active:scale-95 flex items-center justify-center cursor-pointer">
+        connect Hw
+      </button>
 
-        <!-- Tab 3: Demo -->
-        <button type="button" data-tab-target="demo-view" 
-                class="tab-btn relative flex items-center justify-center h-full px-3 text-xs tracking-wider uppercase transition-all text-[#96f681]/80 select-none focus:outline-none">
-          <span class="pb-2">Demo</span>
-        </button>
-      </nav>
-
+      <!-- Online & Connected Status Pill -->
+      <div id="statusPill" class="border border-[#007200] bg-white/70 backdrop-blur-sm text-[#007200] text-[12px] font-medium h-[31px] px-3 rounded-[30px] shadow-[0px_1px_4px_rgba(0,0,0,0.15)] flex items-center justify-center gap-1.5 whitespace-nowrap">
+        <span id="statusDot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="statusText">Online &amp; Connected</span>
+      </div>
     </div>
-  </header>
 
-  <!-- ========================================================================= -->
-  <!-- MAIN SCROLLABLE CONTAINER (PADDING OPTIMIZED TO PREVENT CLIPPING)         -->
-  <!-- ========================================================================= -->
-  <main class="flex-1 w-full max-w-md mx-auto px-4 pt-[132px] pb-safe">
-
-    <!-- ======================================================================= -->
-    <!-- TAB 1 VIEW: SCHEDULES & IRRIGATION CONTROL                              -->
-    <!-- ======================================================================= -->
-    <div id="schedules-view" class="tab-content flex flex-col gap-3.5 pb-8">
-      
-      <!-- Utility Action Bar: Refresh, Bluetooth & Live Pulse -->
-      <div class="flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2">
-          <button id="refresh-action-btn" type="button" 
-                  class="h-9 px-3.5 bg-white text-[#0e730b] text-xs font-bold rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-all select-none">
-            <span id="refresh-icon" class="material-symbols-outlined text-[16px]">sync</span>
-            <span>REFRESH</span>
-          </button>
-
-          <button id="open-hw-modal-btn" type="button" 
-                  class="h-9 px-3.5 bg-[#003a01] hover:bg-[#002a01] text-[#96f681] border border-[#7edc6b]/30 text-xs font-bold rounded-full flex items-center gap-1.5 shadow-sm active:scale-95 transition-all select-none">
-            <span class="material-symbols-outlined text-[16px] text-[#7edc6b]" id="hw-bt-icon">bluetooth</span>
-            <span id="hw-btn-label">CONNECT HW</span>
-          </button>
-        </div>
-
-        <div class="flex items-center gap-1.5 px-3 py-1 bg-[#0b5c08] rounded-full border border-white/10 shadow-inner" title="Firebase Project: agroflow-8da1a | Site: agroflow-ai-project.web.app">
-          <span id="hw-status-dot" class="w-2 h-2 rounded-full bg-[#7edc6b] animate-ping"></span>
-          <span id="firebase-sync-badge" class="text-[11px] font-bold uppercase tracking-wider text-[#96f681]">Telemetry Active</span>
-        </div>
-      </div>
-
-      <!-- Custom Schedules Banner Card -->
-      <div class="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center justify-between">
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="w-10 h-10 rounded-xl bg-[#E8F5E9] flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined text-[#0e730b] text-[22px]">calendar_month</span>
-          </div>
-          <div class="flex flex-col min-w-0">
-            <h2 class="text-sm font-bold text-[#0e730b] leading-tight truncate">Custom Schedules</h2>
-            <span class="text-xs text-[#616161]">Agronomic sequence profiles</span>
-          </div>
-        </div>
-        <button id="custom-modal-btn" type="button" 
-                class="shrink-0 px-3.5 py-1.5 bg-[#0e730b] text-white text-xs font-bold rounded-lg uppercase tracking-wider shadow active:opacity-85 transition-opacity">
-          Custom
-        </button>
-      </div>
-
-      <!-- Main Schedule Irrigation Execution Card (Cycle A) -->
-      <div class="w-full bg-white rounded-2xl p-4 shadow-md flex flex-col gap-3">
-        
-        <!-- Slot Time & Trigger Buttons -->
-        <div class="flex items-start justify-between gap-2">
-          <div class="flex flex-col">
-            <div class="flex items-center gap-2">
-              <span class="text-2xl font-black text-[#0e730b] leading-none tracking-tight">9-10 AM</span>
-              <span class="px-2 py-0.5 rounded-full bg-[#E8F5E9] text-[#0e730b] text-[10px] font-bold uppercase tracking-wider">Cycle A</span>
-            </div>
-            <p class="text-xs text-[#616161] font-medium mt-1 flex items-center gap-1">
-              <span class="material-symbols-outlined text-[14px] text-[#0e730b]">water_pump</span>
-              Submersible Lift Pump &bull; Zone 1
-            </p>
-          </div>
-
-          <!-- START & END Action Buttons -->
-          <div class="flex items-center gap-2 shrink-0">
-            <button id="start-btn" type="button"
-                    class="w-12 h-12 bg-[#0e730b] text-white text-[11px] font-bold uppercase rounded-xl flex flex-col items-center justify-center gap-0.5 shadow transition-all active:scale-95">
-              <span class="material-symbols-outlined text-[16px]">play_arrow</span>
-              <span>Start</span>
-            </button>
-            <button id="end-btn" type="button"
-                    class="w-12 h-12 bg-[#EEEEEE] text-[#616161] text-[11px] font-bold uppercase rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all opacity-80 active:scale-95">
-              <span class="material-symbols-outlined text-[16px]">stop</span>
-              <span>End</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Cooldown / Active Status Notice (Hidden by default) -->
-        <div id="cooldown-pill" class="hidden w-full bg-[#FFF8E1] border border-[#FFE082] rounded-lg px-3 py-1.5 flex items-center justify-between text-xs text-[#B45309] font-bold">
-          <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">timer</span> Safety Cooldown:</span>
-          <span id="cooldown-timer">10s</span>
-        </div>
-
-        <!-- Divider Line -->
-        <div class="w-full h-px bg-gray-100"></div>
-
-        <!-- Soil Moisture Reading & Progress -->
-        <div class="flex flex-col gap-1.5">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[#0e730b] text-[18px]">water_drop</span>
-              <span class="text-xs font-bold text-[#0e730b] uppercase tracking-wide">Soil Moisture</span>
-            </div>
-            <div class="flex items-baseline gap-1.5">
-              <span id="moisture-display" class="text-2xl font-black text-[#0e730b] tracking-tight">28%</span>
-              <span class="text-[10px] font-bold text-[#616161] uppercase">Target: 45%</span>
-            </div>
-          </div>
-
-          <div class="w-full bg-[#F5F5F5] h-2.5 rounded-full overflow-hidden flex shadow-inner">
-            <div id="moisture-progress-bar" class="bg-[#0e730b] h-full rounded-full transition-all duration-700" style="width: 28%;"></div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Operational Flow Card / Field Telemetry Companion -->
-      <div class="w-full bg-white rounded-2xl p-4 shadow-sm flex flex-col gap-2.5">
+    <!-- Soil Moisture Card -->
+    <section class="mt-6 bg-white h-[175px] rounded-[30px] p-5 relative shadow-[2px_2px_8px_rgba(0,0,0,0.08)] flex flex-col justify-between">
+      <div>
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-[#0e730b]">Zone 01 &bull; Fertigation Line</span>
-          <span class="px-2 py-0.5 rounded-full bg-[#E8F5E9] text-[#0e730b] text-[10px] font-extrabold uppercase">Auto Mode</span>
+          <h2 class="text-[#8b5e34] text-[26px] sm:text-[28px] font-medium leading-none">
+            Soil Moisture
+          </h2>
+          <span id="soilPercentage" class="text-[#1e1e1e] text-[11px] font-light">
+            80%
+          </span>
         </div>
-
-        <div class="grid grid-cols-2 gap-2 mt-1">
-          <div class="bg-[#F8FAF8] p-3 rounded-xl flex flex-col border border-gray-100">
-            <span class="text-[10px] font-bold text-[#616161] uppercase tracking-wider">Flow Volume</span>
-            <span class="text-base font-extrabold text-[#0e730b] mt-0.5">1,420 <span class="text-xs font-normal text-gray-500">L/h</span></span>
-          </div>
-          <div class="bg-[#F8FAF8] p-3 rounded-xl flex flex-col border border-gray-100">
-            <span class="text-[10px] font-bold text-[#616161] uppercase tracking-wider">Line Pressure</span>
-            <span class="text-base font-extrabold text-[#0e730b] mt-0.5">2.4 <span class="text-xs font-normal text-gray-500">BAR</span></span>
-          </div>
-        </div>
+        <p id="soilStatusMessage" class="text-[#8b5e34] text-[12px] font-normal mt-2.5 leading-snug max-w-[190px]">
+          The Moisture of soil is dry please start the pump
+        </p>
       </div>
 
-      <!-- Secondary Queued Schedule Block -->
-      <div class="w-full bg-white rounded-2xl p-4 shadow-sm flex flex-col gap-1.5">
-        <div class="flex items-start justify-between">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-bold text-[#0e730b]">2:00 - 2:30 PM</span>
-              <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-[10px] font-bold uppercase">Queued</span>
-            </div>
-            <p class="text-xs text-[#616161] mt-0.5">Nutrient Dosing Injection &bull; Channel B</p>
-          </div>
-          <div class="px-2.5 py-1 bg-[#E8F5E9] rounded-lg text-[10px] text-[#0e730b] font-black tracking-wide">
-            IN 4H 15M
-          </div>
-        </div>
+      <!-- Soil Level Graphical Bars (Figma node 615:46) -->
+      <div class="absolute right-6 bottom-4 flex items-end gap-1.5 h-[90px]">
+        <div class="w-[11px] h-[32px] bg-[#432818] rounded-[30px]"></div>
+        <div class="w-[11px] h-[32px] bg-[#583101] rounded-[30px]"></div>
+        <div class="w-[11px] h-[32px] bg-[#603808] rounded-[30px]"></div>
+        <div class="w-[11px] h-[32px] bg-[#6f4518] rounded-[30px]"></div>
+        <div id="soilTopBar" class="w-[11px] h-[87px] bg-[#8b5e34] rounded-[30px] transition-all duration-500"></div>
       </div>
+    </section>
 
-    </div>
-
-    <!-- ======================================================================= -->
-    <!-- TAB 2 VIEW: AQUATDS LIVE TELEMETRY & DIAGNOSTIC DASHBOARD               -->
-    <!-- ======================================================================= -->
-    <div id="aquatds-view" class="tab-content hidden flex flex-col gap-3.5 pb-8">
+    <!-- Schedules Section -->
+    <div class="mt-5 space-y-4 pb-6 flex-1">
       
-      <!-- Connectivity Status Pills -->
-      <section class="grid grid-cols-2 gap-2.5">
-        <!-- Bluetooth Pill -->
-        <div class="bg-white rounded-2xl px-3.5 py-2.5 flex items-center gap-2.5 shadow-sm">
-          <div class="w-8 h-8 rounded-full bg-[#E8F5E9] flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined text-[#0E730B] text-[18px]">bluetooth</span>
-          </div>
-          <div class="flex flex-col min-w-0">
-            <span class="text-xs font-bold text-[#0E730B] leading-tight truncate">Bluetooth</span>
-            <span class="text-[11px] text-[#0E730B] font-semibold opacity-90">HC-05 Online</span>
-          </div>
+      <!-- Schedule Card 1: 7:54 AM -->
+      <div class="bg-white h-[82px] rounded-[30px] px-5 py-3 shadow-[2px_2px_6px_rgba(0,0,0,0.12)] flex items-center justify-between">
+        <div>
+          <div class="text-[#1e1e1e] text-[24px] font-medium leading-none">7:54 AM</div>
+          <div class="text-[#1e1e1e] text-[10px] font-normal mt-1 opacity-90">Morning Routine</div>
         </div>
-
-        <!-- Firebase Cloud Sync Pill -->
-        <div class="bg-white rounded-2xl px-3.5 py-2.5 flex items-center gap-2.5 shadow-sm">
-          <div class="w-8 h-8 rounded-full bg-[#F4F6F4] flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined text-[#111413] text-[18px]">cloud_sync</span>
-          </div>
-          <div class="flex flex-col min-w-0">
-            <span class="text-xs font-bold text-[#0E730B] leading-tight truncate">Firebase</span>
-            <span class="text-[11px] text-[#0E730B] font-semibold opacity-90">Synced</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- 3-Column Telemetry Gauges Grid -->
-      <section class="grid grid-cols-3 gap-2">
-        
-        <!-- Column 1: TDS Metric -->
-        <div class="flex flex-col items-center">
-          <div class="w-full bg-white rounded-2xl p-2.5 flex flex-col items-center justify-between aspect-square shadow-sm">
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#616161]">TDS Meter</span>
-            
-            <!-- Semi-circle Gauge SVG pointing right -->
-            <div class="w-14 h-9 relative flex items-center justify-center">
-              <svg class="w-full h-full overflow-visible" viewBox="0 0 100 50">
-                <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#E0E0E0" stroke-linecap="round" stroke-width="8"></path>
-                <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#D32F2F" stroke-dasharray="125.6" stroke-dashoffset="25" stroke-linecap="round" stroke-width="8"></path>
-                <line stroke="#D32F2F" stroke-linecap="round" stroke-width="4" x1="50" x2="80" y1="50" y2="24"></line>
-                <circle cx="50" cy="50" fill="#D32F2F" r="5"></circle>
-              </svg>
-            </div>
-            
-            <div class="text-center leading-none">
-              <span id="aquatds-tds-val" class="text-sm font-black text-[#D32F2F] tracking-tight block">880 ppm</span>
-              <span class="text-[9px] font-bold text-[#D32F2F] uppercase">High Salinity</span>
-            </div>
-          </div>
-          <span class="text-[11px] text-white text-center mt-1.5 font-bold tracking-tight">Purity &amp; Salinity</span>
-        </div>
-
-        <!-- Column 2: Water Flow Rate -->
-        <div class="flex flex-col items-center">
-          <div class="w-full bg-white rounded-2xl p-2.5 flex flex-col items-center justify-between aspect-square shadow-sm">
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#616161]">Flow Meter</span>
-            
-            <div class="flex items-center justify-center gap-0.5 my-auto">
-              <div class="w-7 h-7 rounded-full bg-[#0288D1] flex items-center justify-center shadow">
-                <span class="material-symbols-outlined text-white text-[16px]">waves</span>
-              </div>
-              <div class="w-6 h-6 rounded-full bg-[#B3E5FC] flex items-center justify-center -ml-2">
-                <span class="material-symbols-outlined text-[#0288D1] text-[14px]">water_drop</span>
-              </div>
-            </div>
-
-            <div class="flex flex-col items-center text-center leading-none">
-              <span class="text-[9px] text-[#0288D1] uppercase tracking-wider font-extrabold">Filtering</span>
-              <span id="aquatds-flow-val" class="text-sm font-black text-[#0288D1] mt-0.5 tracking-tight">1.8 L/s</span>
-            </div>
-          </div>
-          <span class="text-[11px] text-white text-center mt-1.5 font-bold tracking-tight">Flow Rate</span>
-        </div>
-
-        <!-- Column 3: Soil Hydration -->
-        <div class="flex flex-col items-center">
-          <div class="w-full bg-white rounded-2xl p-2.5 flex flex-col items-center justify-between aspect-square shadow-sm">
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#616161]">Moisture</span>
-            
-            <!-- Segmented Brown Gauge -->
-            <div class="w-14 h-9 relative flex items-center justify-center">
-              <svg class="w-full h-full overflow-visible" viewBox="0 0 100 50">
-                <path d="M 10 50 A 40 40 0 0 1 30 20" fill="none" stroke="#6D4C41" stroke-linecap="round" stroke-width="8"></path>
-                <path d="M 38 14 A 40 40 0 0 1 62 14" fill="none" stroke="#D7CCC8" stroke-linecap="round" stroke-width="8"></path>
-                <path d="M 70 20 A 40 40 0 0 1 90 50" fill="none" stroke="#EFEBE9" stroke-linecap="round" stroke-width="8"></path>
-                <line stroke="#6D4C41" stroke-linecap="round" stroke-width="4" x1="50" x2="24" y1="50" y2="28"></line>
-                <circle cx="50" cy="50" fill="#6D4C41" r="5"></circle>
-              </svg>
-            </div>
-
-            <div class="flex flex-col items-center text-center leading-none">
-              <span id="aquatds-soil-status" class="text-[9px] text-[#6D4C41] uppercase tracking-wider font-extrabold">Dry</span>
-              <span id="aquatds-soil-val" class="text-sm font-black text-[#6D4C41] mt-0.5 tracking-tight">28%</span>
-            </div>
-          </div>
-          <span class="text-[11px] text-white text-center mt-1.5 font-bold tracking-tight">Soil Hydration</span>
-        </div>
-
-      </section>
-
-      <!-- AI Summary Telemetry Block (Haiku AI Integration) -->
-      <section class="flex flex-col gap-2">
-        <div class="flex items-center justify-between px-1">
-          <div class="flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[#7edc6b] text-[18px]">auto_awesome</span>
-            <h2 class="text-xs font-bold text-white uppercase tracking-wider">AI Agronomist Summary</h2>
-          </div>
-          <span class="text-[10px] text-[#96f681] font-bold uppercase">Haiku 5.5 Inferred</span>
-        </div>
-
-        <div class="w-full bg-white rounded-2xl p-4 shadow-sm flex flex-col gap-2">
-          <p id="ai-summary-text" class="text-xs text-[#0e730b] leading-relaxed font-medium">
-            "Source water salinity is elevated (880 ppm). System has automatically routed water through the charcoal-sand bio-filter before mixing liquid nutrients. Soil moisture is at 28%; current cycle will restore optimal hydration in 45 seconds without salt buildup."
-          </p>
-          <div class="flex items-center justify-between pt-1 border-t border-gray-100 text-[10px] text-gray-500 font-semibold">
-            <span>Slot: Evening 05:30 PM (Auto-Adjusted)</span>
-            <span class="text-[#0e730b] font-bold">Safe &bull; Active</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Hardware Actuator Status Stack -->
-      <section class="flex flex-col gap-2">
-        <div class="px-1">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-white/90">Hardware Mechanism Signals</span>
-        </div>
-
-        <!-- Actuator 1: Servo Motor -->
-        <div class="w-full bg-white rounded-2xl px-4 py-3 flex items-center justify-between shadow-sm">
-          <div class="flex items-center gap-2.5">
-            <span class="material-symbols-outlined text-[#0E730B] text-[20px]">precision_manufacturing</span>
-            <div class="flex flex-col">
-              <span class="text-xs font-bold text-[#0E730B]">Servo Diverter Valve</span>
-              <span class="text-[10px] text-gray-500">Pin 3 PWM &bull; Divert to Filter</span>
-            </div>
-          </div>
-          <div class="flex items-center gap-1.5 bg-[#E1F5FE] px-2.5 py-1 rounded-full">
-            <div class="w-2 h-2 rounded-full bg-[#0288D1] animate-pulse"></div>
-            <span class="text-[10px] font-extrabold text-[#0288D1] uppercase tracking-wider">90&deg; Open</span>
-          </div>
-        </div>
-
-        <!-- Actuator 2: Main Pump -->
-        <div class="w-full bg-white rounded-2xl px-4 py-3 flex items-center justify-between shadow-sm">
-          <div class="flex items-center gap-2.5">
-            <span class="material-symbols-outlined text-[#0E730B] text-[20px]">water_pump</span>
-            <div class="flex flex-col">
-              <span class="text-xs font-bold text-[#0E730B]">Main Lift Pump</span>
-              <span class="text-[10px] text-gray-500">Relay 1 &bull; Pin 7 Active</span>
-            </div>
-          </div>
-          <div class="flex items-center gap-1.5 bg-[#E1F5FE] px-2.5 py-1 rounded-full">
-            <div class="w-2 h-2 rounded-full bg-[#0288D1] animate-pulse"></div>
-            <span class="text-[10px] font-extrabold text-[#0288D1] uppercase tracking-wider">Running</span>
-          </div>
-        </div>
-
-        <!-- Actuator 3: Fertigation System -->
-        <div class="w-full bg-white rounded-2xl px-4 py-3 flex items-center justify-between shadow-sm">
-          <div class="flex items-center gap-2.5">
-            <span class="material-symbols-outlined text-[#0E730B] text-[20px]">science</span>
-            <div class="flex flex-col">
-              <span class="text-xs font-bold text-[#0E730B]">Fertigation Pump</span>
-              <span class="text-[10px] text-gray-500">Relay 2 &bull; Pin 8 Dosing</span>
-            </div>
-          </div>
-          <div class="flex items-center gap-1.5 bg-[#E8F5E9] px-2.5 py-1 rounded-full">
-            <div class="w-2 h-2 rounded-full bg-[#0E730B] animate-pulse"></div>
-            <span class="text-[10px] font-extrabold text-[#0E730B] uppercase tracking-wider">Dosing 30mL</span>
-          </div>
-        </div>
-      </section>
-
-    </div>
-
-    <!-- ======================================================================= -->
-    <!-- TAB 3 VIEW: DEMO & EXHIBITION SANDBOX                                   -->
-    <!-- ======================================================================= -->
-    <div id="demo-view" class="tab-content hidden flex flex-col gap-3.5 pb-8">
-      
-      <!-- Live Simulation Mode Notice Banner -->
-      <div class="flex items-center justify-between bg-white rounded-2xl px-4 py-2.5 shadow-sm">
-        <div class="flex items-center gap-2 min-w-0">
-          <span class="w-2.5 h-2.5 rounded-full bg-[#7CB342] shrink-0 animate-ping"></span>
-          <span class="text-xs font-bold text-[#0E730B] uppercase tracking-wider truncate">Simulation Stream</span>
-        </div>
-        <span class="text-[10px] bg-[#E8F5E9] text-[#0E730B] px-2.5 py-0.5 rounded-full font-black">VIRTUAL RIG 01</span>
-      </div>
-
-      <!-- Connectivity Pills in Demo -->
-      <div class="grid grid-cols-2 gap-2.5">
-        <div class="bg-white rounded-2xl h-11 px-3.5 flex items-center justify-between shadow-sm">
-          <div class="flex items-center gap-1.5 min-w-0">
-            <span class="material-symbols-outlined text-[#7CB342] text-[18px]">bluetooth</span>
-            <span class="text-xs font-bold text-[#0E730B] truncate">Bluetooth</span>
-          </div>
-          <div class="flex items-center gap-1 shrink-0">
-            <span class="w-2 h-2 rounded-full bg-[#7CB342]"></span>
-            <span class="text-[10px] font-bold text-[#7CB342] uppercase">Virtual</span>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl h-11 px-3.5 flex items-center justify-between shadow-sm">
-          <div class="flex items-center gap-1.5 min-w-0">
-            <span class="material-symbols-outlined text-[#111413] text-[18px]">sync</span>
-            <span class="text-xs font-bold text-[#0E730B] truncate">Firebase</span>
-          </div>
-          <div class="flex items-center gap-1 shrink-0">
-            <span class="material-symbols-outlined text-[#111413] text-[15px]">sensors</span>
-            <span class="text-[10px] font-bold text-[#111413] uppercase">Sync</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3-Column Telemetry Gauges in Demo -->
-      <div class="grid grid-cols-3 gap-2">
-        <!-- Card 1: Purity -->
-        <div class="flex flex-col items-center">
-          <div class="w-full bg-white rounded-2xl p-2.5 flex flex-col items-center justify-between aspect-square shadow-sm">
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#616161]">TDS Meter</span>
-            
-            <div class="relative w-16 h-10 mt-1 flex items-end justify-center">
-              <svg class="w-full h-full overflow-visible" viewBox="0 0 100 55">
-                <path d="M 10 50 A 40 40 0 0 1 35 15" fill="none" stroke="#7CB342" stroke-linecap="round" stroke-width="8"></path>
-                <path d="M 40 13 A 40 40 0 0 1 65 14" fill="none" stroke="#FBC02D" stroke-linecap="round" stroke-width="8"></path>
-                <path d="M 70 17 A 40 40 0 0 1 90 50" fill="none" stroke="#D32F2F" stroke-linecap="round" stroke-width="8"></path>
-                <line id="demo-needle-tds" stroke="#D32F2F" stroke-linecap="round" stroke-width="3.5" x1="50" x2="80" y1="50" y2="28"></line>
-                <circle cx="50" cy="50" fill="#D32F2F" r="5"></circle>
-              </svg>
-            </div>
-            
-            <div class="text-center w-full">
-              <div id="demo-ppm-val" class="text-sm font-black text-[#D32F2F] leading-tight">880</div>
-              <div class="text-[9px] font-bold text-[#D32F2F] tracking-tight">ppm</div>
-            </div>
-          </div>
-          <span class="text-[11px] text-white text-center mt-1.5 font-bold tracking-tight">Purity &amp; Salinity</span>
-        </div>
-
-        <!-- Card 2: Flow Rate -->
-        <div class="flex flex-col items-center">
-          <div class="w-full bg-white rounded-2xl p-2.5 flex flex-col items-center justify-between aspect-square shadow-sm">
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#616161]">Flow Meter</span>
-            
-            <div class="flex items-center justify-center gap-1 text-[#0288D1] my-auto">
-              <span class="material-symbols-outlined text-[18px]">water</span>
-              <span class="material-symbols-outlined text-[18px]">waves</span>
-            </div>
-
-            <div class="text-center w-full">
-              <span class="text-[9px] font-extrabold text-[#0288D1] uppercase tracking-wider block">Filtering</span>
-              <div id="demo-flow-val" class="text-sm font-black text-[#0288D1] leading-tight mt-0.5">1.8</div>
-              <span class="text-[9px] font-bold text-[#0288D1] tracking-tight block">L/s</span>
-            </div>
-          </div>
-          <span class="text-[11px] text-white text-center mt-1.5 font-bold tracking-tight">Flow Rate</span>
-        </div>
-
-        <!-- Card 3: Soil Hydration -->
-        <div class="flex flex-col items-center">
-          <div class="w-full bg-white rounded-2xl p-2.5 flex flex-col items-center justify-between aspect-square shadow-sm">
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#616161]">Moisture</span>
-            
-            <div class="relative w-16 h-10 mt-1 flex items-end justify-center">
-              <svg class="w-full h-full overflow-visible" viewBox="0 0 100 55">
-                <path d="M 12 50 A 40 40 0 0 1 32 20" fill="none" stroke="#6D4C41" stroke-linecap="round" stroke-width="8"></path>
-                <path d="M 40 14 A 40 40 0 0 1 60 14" fill="none" stroke="#D7CCC8" stroke-linecap="round" stroke-width="8"></path>
-                <path d="M 68 20 A 40 40 0 0 1 88 50" fill="none" stroke="#D7CCC8" stroke-linecap="round" stroke-width="8"></path>
-                <line stroke="#6D4C41" stroke-linecap="round" stroke-width="3.5" x1="50" x2="22" y1="50" y2="30"></line>
-                <circle cx="50" cy="50" fill="#6D4C41" r="5"></circle>
-              </svg>
-            </div>
-
-            <div class="text-center w-full">
-              <span id="demo-soil-status" class="text-[9px] font-extrabold text-[#6D4C41] uppercase tracking-wider block">Dry</span>
-              <div id="demo-soil-val" class="text-sm font-black text-[#6D4C41] leading-tight mt-0.5">28%</div>
-              <span class="text-[9px] font-bold text-[#6D4C41] tracking-tight block">VWC</span>
-            </div>
-          </div>
-          <span class="text-[11px] text-white text-center mt-1.5 font-bold tracking-tight">Soil Hydration</span>
-        </div>
-      </div>
-
-      <!-- Demo Scenario Quick Switchers for Exhibition Judges -->
-      <div class="w-full bg-white rounded-2xl p-3.5 shadow-sm flex flex-col gap-2">
-        <span class="text-xs font-bold text-[#0E730B] uppercase tracking-wider flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-[16px]">tune</span>
-          Exhibition Test Scenarios:
-        </span>
-        <div class="grid grid-cols-3 gap-1.5">
-          <button id="scenario-saline-btn" type="button" 
-                  class="scenario-btn px-2 py-1.5 bg-[#D32F2F] text-white text-[10px] font-bold rounded-lg uppercase tracking-tight shadow active:opacity-80">
-            Saline (880ppm)
+        <div class="flex items-center gap-2">
+          <button class="btnStart bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
+            Start
           </button>
-          <button id="scenario-fresh-btn" type="button" 
-                  class="scenario-btn px-2 py-1.5 bg-gray-100 text-gray-700 text-[10px] font-bold rounded-lg uppercase tracking-tight active:opacity-80">
-            Clean (180ppm)
-          </button>
-          <button id="scenario-drought-btn" type="button" 
-                  class="scenario-btn px-2 py-1.5 bg-gray-100 text-gray-700 text-[10px] font-bold rounded-lg uppercase tracking-tight active:opacity-80">
-            Drought (12%)
+          <button class="btnEnd bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
+            End
           </button>
         </div>
       </div>
 
-      <!-- Single Interactive Cycle Trigger Button -->
-      <div class="flex justify-center pt-1">
-        <button id="cycleDemoStateBtn" type="button"
-                class="bg-white text-[#0E730B] px-5 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wider flex items-center gap-2 shadow-md active:scale-95 transition-all">
-          <span class="material-symbols-outlined text-[18px]">touch_app</span>
-          <span>Cycle Next State</span>
-        </button>
+      <!-- Schedule Card 2: 8:30 AM -->
+      <div class="bg-white h-[82px] rounded-[30px] px-5 py-3 shadow-[2px_2px_6px_rgba(0,0,0,0.12)] flex items-center justify-between">
+        <div>
+          <div class="text-[#1e1e1e] text-[24px] font-medium leading-none">8:30 AM</div>
+          <div class="text-[#1e1e1e] text-[10px] font-normal mt-1 opacity-90">Commute</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="btnStart bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
+            Start
+          </button>
+          <button class="btnEnd bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
+            End
+          </button>
+        </div>
+      </div>
+
+      <!-- Schedule Card 3: 9:00 AM -->
+      <div class="bg-white h-[82px] rounded-[30px] px-5 py-3 shadow-[2px_2px_6px_rgba(0,0,0,0.12)] flex items-center justify-between">
+        <div>
+          <div class="text-[#1e1e1e] text-[24px] font-medium leading-none">9:00 AM</div>
+          <div class="text-[#1e1e1e] text-[10px] font-normal mt-1 opacity-90">Work Hours</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="btnStart bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
+            Start
+          </button>
+          <button class="btnEnd bg-[#007200] hover:bg-[#005c00] text-white text-[12px] font-medium w-[74px] h-[48px] rounded-[24px] transition active:scale-95 flex items-center justify-center cursor-pointer shadow-sm">
+            End
+          </button>
+        </div>
       </div>
 
     </div>
 
   </main>
 
-  <!-- ========================================================================= -->
-  <!-- HARDWARE LINK & BLUETOOTH / SERIAL MODAL                                   -->
-  <!-- ========================================================================= -->
-  <div id="hw-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300 hidden">
-    <div class="w-full max-w-md bg-white text-[#1d201f] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+  <!-- Connect Hardware Dialog (Modal) -->
+  <div id="hwModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-[28px] max-w-sm w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-[18px] font-semibold text-[#1e1e1e]">Connect Hardware</h3>
+        <button id="closeHwModal" class="text-gray-400 hover:text-gray-700 text-[20px] leading-none cursor-pointer">&times;</button>
+      </div>
+      <p class="text-[12px] text-gray-500">
+        Choose connection method for your Arduino Uno / HC-05 module:
+      </p>
       
-      <!-- Modal Header -->
-      <div class="bg-[#0e730b] text-white p-4 flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center">
-            <span class="material-symbols-outlined text-[#96f681] text-[20px]">bluetooth_connected</span>
-          </div>
-          <div>
-            <h3 class="font-extrabold text-sm leading-tight">Hardware Bridge</h3>
-            <p class="text-[11px] text-[#96f681] font-medium">Connect Arduino via Bluetooth / Serial</p>
-          </div>
-        </div>
-        <button id="close-hw-modal-btn" type="button" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all">
-          <span class="material-symbols-outlined text-[18px]">close</span>
+      <div class="space-y-3 pt-2">
+        <button id="btnConnectSerial" class="w-full bg-[#007200] hover:bg-[#005c00] text-white text-[13px] font-medium py-3 px-4 rounded-[20px] transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer shadow">
+          🔌 USB Cable / Serial Port (COM)
+        </button>
+        <button id="btnConnectBle" class="w-full border border-[#007200] text-[#007200] hover:bg-emerald-50 text-[13px] font-medium py-3 px-4 rounded-[20px] transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+          📶 Bluetooth Wireless (HC-05)
         </button>
       </div>
 
-      <!-- Modal Body -->
-      <div class="p-4 flex flex-col gap-3.5 overflow-y-auto">
-
-        <!-- Live Status Bar -->
-        <div id="hw-status-card" class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <span id="hw-modal-status-dot" class="w-3 h-3 rounded-full bg-slate-400"></span>
-            <div>
-              <p id="hw-modal-status-title" class="text-xs font-bold text-slate-800">Hardware Disconnected</p>
-              <p id="hw-modal-status-sub" class="text-[10px] text-slate-500">Select connection mode below</p>
-            </div>
-          </div>
-          <button id="hw-disconnect-btn" type="button" class="hidden px-2.5 py-1 text-[11px] font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-full border border-red-200 transition-all">
-            Disconnect
-          </button>
-        </div>
-
-        <!-- Connection Option 1: Web Serial API (HC-05 / USB) -->
-        <div class="p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-[#0e730b]/50 transition-all shadow-sm flex flex-col gap-2">
-          <div class="flex items-start justify-between">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[#0e730b] text-[22px]">cable</span>
-              <div>
-                <h4 class="text-xs font-bold text-slate-900">Serial COM Port / Paired HC-05</h4>
-                <p class="text-[11px] text-slate-500">USB cable or HC-05 Bluetooth paired in Windows</p>
-              </div>
-            </div>
-            <span class="px-2 py-0.5 text-[9px] font-black uppercase rounded bg-[#E8F5E9] text-[#0e730b]">9600 Baud</span>
-          </div>
-          <button id="connect-serial-btn" type="button" class="w-full h-10 mt-1 bg-[#0e730b] hover:bg-[#0b5c08] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98] transition-all">
-            <span class="material-symbols-outlined text-[16px]">settings_input_composite</span>
-            <span>Select Serial / Bluetooth Port</span>
-          </button>
-        </div>
-
-        <!-- Connection Option 2: Web Bluetooth API (BLE) -->
-        <div class="p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-[#0288D1]/50 transition-all shadow-sm flex flex-col gap-2">
-          <div class="flex items-start justify-between">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[#0288D1] text-[22px]">bluetooth</span>
-              <div>
-                <h4 class="text-xs font-bold text-slate-900">Wireless BLE (Bluetooth Low Energy)</h4>
-                <p class="text-[11px] text-slate-500">For ESP32 BLE / HM-10 / Nordic UART</p>
-              </div>
-            </div>
-            <span class="px-2 py-0.5 text-[9px] font-black uppercase rounded bg-sky-50 text-sky-700">Wireless</span>
-          </div>
-          <button id="connect-ble-btn" type="button" class="w-full h-10 mt-1 bg-[#0288D1] hover:bg-[#0277bd] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98] transition-all">
-            <span class="material-symbols-outlined text-[16px]">bluetooth_searching</span>
-            <span>Scan &amp; Pair BLE Device</span>
-          </button>
-        </div>
-
-        <!-- Terminal / Serial Monitor Drawer (Collapsible) -->
-        <div class="border border-slate-200 rounded-2xl overflow-hidden bg-slate-900 text-slate-100 text-xs">
-          <div class="p-2.5 bg-slate-800 border-b border-slate-700 flex items-center justify-between">
-            <span class="font-mono text-[11px] font-bold text-slate-300 flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-              Live Serial Monitor
-            </span>
-            <div class="flex items-center gap-1.5">
-              <button id="clear-terminal-btn" type="button" class="text-[10px] text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-700">Clear</button>
-            </div>
-          </div>
-          <div id="hw-terminal-output" class="p-3 font-mono text-[11px] h-32 overflow-y-auto flex flex-col gap-1 text-slate-300 select-text">
-            <div class="text-slate-500 italic">// Ready. Connect to view incoming packets...</div>
-          </div>
-          
-          <!-- Command Input Row -->
-          <div class="p-2 bg-slate-800 border-t border-slate-700 flex items-center gap-1.5">
-            <input id="hw-cmd-input" type="text" placeholder="e.g. CMD:PUMP:ON or CMD:DOSE:30" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:border-[#7edc6b]"/>
-            <button id="hw-send-cmd-btn" type="button" class="px-3 py-1.5 bg-[#7edc6b] text-[#003a01] font-bold rounded-lg text-xs hover:bg-[#96f681] transition-all">
-              SEND
-            </button>
-          </div>
-        </div>
-
+      <div id="hwTerminalLogs" class="bg-gray-900 text-emerald-400 text-[11px] font-mono p-3 rounded-[16px] h-24 overflow-y-auto hidden">
+        // Ready to connect...
       </div>
-
     </div>
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- SINGLE UNIFIED JAVASCRIPT ENGINE (TABS, MOCK DATA, COOLDOWN & DEMO)       -->
-  <!-- ========================================================================= -->
+  <!-- Hardware Bridge Script -->
   <script>
-    (function () {
-      // 1. TAB SWITCHING LOGIC
-      const tabButtons = document.querySelectorAll('#main-nav .tab-btn');
-      const tabContents = document.querySelectorAll('.tab-content');
+    // State variables
+    let activePort = null;
+    let serialReader = null;
+    let serialWriter = null;
+    let bleDevice = null;
+    let bleCharacteristic = null;
+    let isConnected = false;
 
-      tabButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const targetId = btn.getAttribute('data-tab-target');
+    // UI Elements
+    const btnConnectHw = document.getElementById('btnConnectHw');
+    const hwModal = document.getElementById('hwModal');
+    const closeHwModal = document.getElementById('closeHwModal');
+    const btnConnectSerial = document.getElementById('btnConnectSerial');
+    const btnConnectBle = document.getElementById('btnConnectBle');
+    const hwTerminalLogs = document.getElementById('hwTerminalLogs');
+    const statusText = document.getElementById('statusText');
+    const statusDot = document.getElementById('statusDot');
+    const btnRefresh = document.getElementById('btnRefresh');
+    const soilPercentage = document.getElementById('soilPercentage');
+    const soilStatusMessage = document.getElementById('soilStatusMessage');
+    const soilTopBar = document.getElementById('soilTopBar');
+    const startBtns = document.querySelectorAll('.btnStart');
+    const endBtns = document.querySelectorAll('.btnEnd');
 
-          // Update active styles on buttons
-          tabButtons.forEach(b => {
-            b.classList.remove('active-nav-tab', 'text-white', 'font-bold');
-            b.classList.add('text-[#96f681]/80');
-          });
-          btn.classList.add('active-nav-tab', 'text-white', 'font-bold');
-          btn.classList.remove('text-[#96f681]/80');
+    function logMsg(msg) {
+      hwTerminalLogs.classList.remove('hidden');
+      const div = document.createElement('div');
+      div.textContent = msg;
+      hwTerminalLogs.appendChild(div);
+      hwTerminalLogs.scrollTop = hwTerminalLogs.scrollHeight;
+    }
 
-          // Show targeted view, hide others
-          tabContents.forEach(content => {
-            if (content.id === targetId) {
-              content.classList.remove('hidden');
-            } else {
-              content.classList.add('hidden');
-            }
-          });
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-      });
-
-      // 2. REFRESH ACTION (Tab 1)
-      const refreshBtn = document.getElementById('refresh-action-btn');
-      const refreshIcon = document.getElementById('refresh-icon');
-      const moistureDisplay = document.getElementById('moisture-display');
-      const moistureProgressBar = document.getElementById('moisture-progress-bar');
-
-      if (refreshBtn && refreshIcon) {
-        refreshBtn.addEventListener('click', () => {
-          refreshIcon.classList.add('animate-spin');
-          setTimeout(() => {
-            refreshIcon.classList.remove('animate-spin');
-            if (moistureDisplay && moistureProgressBar) {
-              const currentVal = parseInt(moistureDisplay.textContent, 10);
-              const nextVal = currentVal >= 32 ? 28 : currentVal + 2;
-              moistureDisplay.textContent = nextVal + '%';
-              moistureProgressBar.style.width = nextVal + '%';
-            }
-          }, 600);
-        });
+    function setConnectedUI(connected, label = "Online & Connected") {
+      isConnected = connected;
+      if (connected) {
+        statusText.textContent = label;
+        statusDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+      } else {
+        statusText.textContent = "Offline";
+        statusDot.className = "w-2 h-2 rounded-full bg-gray-400";
       }
+    }
 
-      // 3. START / END IRRIGATION BUTTONS & 10-SECOND SAFETY COOLDOWN
-      const startBtn = document.getElementById('start-btn');
-      const endBtn = document.getElementById('end-btn');
-      const cooldownPill = document.getElementById('cooldown-pill');
-      const cooldownTimer = document.getElementById('cooldown-timer');
-      let cooldownInterval = null;
+    // Modal Controls
+    btnConnectHw.addEventListener('click', () => {
+      hwModal.classList.remove('hidden');
+    });
+    closeHwModal.addEventListener('click', () => {
+      hwModal.classList.add('hidden');
+    });
 
-      if (startBtn && endBtn) {
-        startBtn.addEventListener('click', () => {
-          startBtn.classList.add('ring-2', 'ring-offset-2', 'ring-white', 'scale-105');
-          endBtn.classList.remove('ring-2', 'ring-offset-2', 'ring-white', 'scale-105');
-          endBtn.classList.add('opacity-90', 'bg-red-500', 'text-white');
-          endBtn.classList.remove('bg-[#EEEEEE]', 'text-[#616161]');
-        });
+    // Handle Incoming Telemetry Packet
+    function handleIncomingJson(str) {
+      try {
+        const data = JSON.parse(str);
+        if (data.moisture !== undefined) {
+          soilPercentage.textContent = data.moisture + '%';
+          const barHeight = Math.max(15, Math.min(87, (data.moisture / 100) * 87));
+          soilTopBar.style.height = barHeight + 'px';
 
-        endBtn.addEventListener('click', () => {
-          endBtn.classList.remove('ring-2', 'ring-offset-2', 'ring-white', 'scale-105', 'bg-red-500', 'text-white');
-          endBtn.classList.add('bg-[#EEEEEE]', 'text-[#616161]');
-          startBtn.classList.remove('ring-2', 'ring-offset-2', 'ring-white', 'scale-105');
-          
-          // Trigger 10-Second Safety Cooldown Lock
-          startBtn.disabled = true;
-          startBtn.classList.add('opacity-50', 'cursor-not-allowed');
-          cooldownPill.classList.remove('hidden');
-          
-          let timeLeft = 10;
-          cooldownTimer.textContent = timeLeft + 's';
-          
-          clearInterval(cooldownInterval);
-          cooldownInterval = setInterval(() => {
-            timeLeft--;
-            cooldownTimer.textContent = timeLeft + 's';
-            if (timeLeft <= 0) {
-              clearInterval(cooldownInterval);
-              cooldownPill.classList.add('hidden');
-              startBtn.disabled = false;
-              startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
-          }, 1000);
-        });
-      }
-
-      // 4. DEMO TAB STATE CYCLER & SCENARIOS (Tab 3)
-      const demoStates = [
-        {
-          ppm: '880',
-          flow: '1.8',
-          soil: '28%',
-          status: 'Dry',
-          textColor: '#D32F2F',
-          aiText: '"Source water salinity is elevated (880 ppm). System has automatically routed water through the charcoal-sand bio-filter before mixing liquid nutrients. Soil moisture is at 28%; current cycle will restore optimal hydration in 45 seconds without salt buildup."'
-        },
-        {
-          ppm: '180',
-          flow: '2.4',
-          soil: '45%',
-          status: 'Optimal',
-          textColor: '#2E7D32',
-          aiText: '"Source water salinity is safe (180 ppm). Bio-filter is bypassed directly to preserve filtration bed life. Clean water is mixed with 30 mL fertigation dose for direct root absorption."'
-        },
-        {
-          ppm: '920',
-          flow: '0.9',
-          soil: '12%',
-          status: 'Drought',
-          textColor: '#C62828',
-          aiText: '"Severe drought stress detected (soil moisture 12%). Salinity is high (920 ppm). Bio-filter activated at max capacity with emergency 50 mL nutrient boost."'
+          if (data.moisture < 35) {
+            soilStatusMessage.textContent = "The Moisture of soil is dry please start the pump";
+          } else if (data.moisture > 65) {
+            soilStatusMessage.textContent = "Soil is saturated with water, optimal hydration reached";
+          } else {
+            soilStatusMessage.textContent = "Soil moisture level is optimal for healthy crop growth";
+          }
         }
-      ];
-
-      let demoIndex = 0;
-      function applyDemoState(state) {
-        const ppm = document.getElementById('demo-ppm-val');
-        const flow = document.getElementById('demo-flow-val');
-        const soil = document.getElementById('demo-soil-val');
-        const soilStatus = document.getElementById('demo-soil-status');
-        const aiText = document.getElementById('ai-summary-text');
-        
-        // Also mirror to Tab 2
-        const aquaTdsVal = document.getElementById('aquatds-tds-val');
-        const aquaFlowVal = document.getElementById('aquatds-flow-val');
-        const aquaSoilVal = document.getElementById('aquatds-soil-val');
-        const aquaSoilStatus = document.getElementById('aquatds-soil-status');
-
-        if (ppm) { ppm.textContent = state.ppm; ppm.style.color = state.textColor; }
-        if (flow) { flow.textContent = state.flow; }
-        if (soil) { soil.textContent = state.soil; }
-        if (soilStatus) { soilStatus.textContent = state.status; }
-        if (aiText) { aiText.textContent = state.aiText; }
-
-        if (aquaTdsVal) { aquaTdsVal.textContent = state.ppm + ' ppm'; aquaTdsVal.style.color = state.textColor; }
-        if (aquaFlowVal) { aquaFlowVal.textContent = state.flow + ' L/s'; }
-        if (aquaSoilVal) { aquaSoilVal.textContent = state.soil; }
-        if (aquaSoilStatus) { aquaSoilStatus.textContent = state.status; }
+      } catch (e) {
+        // partial string
       }
+    }
 
-      const cycleBtn = document.getElementById('cycleDemoStateBtn');
-      if (cycleBtn) {
-        cycleBtn.addEventListener('click', () => {
-          demoIndex = (demoIndex + 1) % demoStates.length;
-          applyDemoState(demoStates[demoIndex]);
-        });
-      }
-
-      // Quick scenario buttons
-      const btnSaline = document.getElementById('scenario-saline-btn');
-      const btnFresh = document.getElementById('scenario-fresh-btn');
-      const btnDrought = document.getElementById('scenario-drought-btn');
-
-      if (btnSaline) btnSaline.addEventListener('click', () => applyDemoState(demoStates[0]));
-      if (btnFresh) btnFresh.addEventListener('click', () => applyDemoState(demoStates[1]));
-      if (btnDrought) btnDrought.addEventListener('click', () => applyDemoState(demoStates[2]));
-
-      // 5. HARDWARE LINK & BLUETOOTH / SERIAL BRIDGE ENGINE
-      let activePort = null;
-      let serialReader = null;
-      let serialWriter = null;
-      let bleDevice = null;
-      let bleCharacteristic = null;
-      let isHwConnected = false;
-
-      const hwModal = document.getElementById('hw-modal');
-      const openHwModalBtn = document.getElementById('open-hw-modal-btn');
-      const closeHwModalBtn = document.getElementById('close-hw-modal-btn');
-      const hwBtnLabel = document.getElementById('hw-btn-label');
-      const hwBtIcon = document.getElementById('hw-bt-icon');
-      const hwStatusDot = document.getElementById('hw-status-dot');
-      const hwModalDot = document.getElementById('hw-modal-status-dot');
-      const hwModalTitle = document.getElementById('hw-modal-status-title');
-      const hwModalSub = document.getElementById('hw-modal-status-sub');
-      const hwDisconnectBtn = document.getElementById('hw-disconnect-btn');
-      const connectSerialBtn = document.getElementById('connect-serial-btn');
-      const connectBleBtn = document.getElementById('connect-ble-btn');
-      const terminalOutput = document.getElementById('hw-terminal-output');
-      const clearTerminalBtn = document.getElementById('clear-terminal-btn');
-      const hwCmdInput = document.getElementById('hw-cmd-input');
-      const hwSendCmdBtn = document.getElementById('hw-send-cmd-btn');
-
-      // Modal Open/Close
-      if (openHwModalBtn && hwModal) {
-        openHwModalBtn.addEventListener('click', () => hwModal.classList.remove('hidden'));
-      }
-      if (closeHwModalBtn && hwModal) {
-        closeHwModalBtn.addEventListener('click', () => hwModal.classList.add('hidden'));
-      }
-      if (hwModal) {
-        hwModal.addEventListener('click', (e) => {
-          if (e.target === hwModal) hwModal.classList.add('hidden');
-        });
-      }
-
-      function logTerminal(prefix, msg, colorClass = "text-slate-300") {
-        if (!terminalOutput) return;
-        const time = new Date().toLocaleTimeString().split(' ')[0];
-        const line = document.createElement('div');
-        line.className = `leading-tight break-all ${colorClass}`;
-        line.textContent = `[${time}] ${prefix} ${msg}`;
-        terminalOutput.appendChild(line);
-        terminalOutput.scrollTop = terminalOutput.scrollHeight;
-      }
-
-      if (clearTerminalBtn && terminalOutput) {
-        clearTerminalBtn.addEventListener('click', () => {
-          terminalOutput.innerHTML = '<div class="text-slate-500 italic">// Terminal cleared. Waiting for data...</div>';
-        });
-      }
-
-      function updateHwUI(connected, label = "Connected") {
-        isHwConnected = connected;
-        if (connected) {
-          if (hwBtnLabel) hwBtnLabel.textContent = "ONLINE";
-          if (hwBtIcon) hwBtIcon.classList.add('text-[#7edc6b]');
-          if (hwStatusDot) {
-            hwStatusDot.classList.remove('bg-slate-400');
-            hwStatusDot.classList.add('bg-[#7edc6b]', 'animate-ping');
-          }
-          if (hwModalDot) {
-            hwModalDot.classList.remove('bg-slate-400');
-            hwModalDot.classList.add('bg-emerald-500', 'shadow-md');
-          }
-          if (hwModalTitle) hwModalTitle.textContent = `Online: ${label}`;
-          if (hwModalSub) hwModalSub.textContent = "Live telemetry streaming into dashboard";
-          if (hwDisconnectBtn) hwDisconnectBtn.classList.remove('hidden');
-        } else {
-          if (hwBtnLabel) hwBtnLabel.textContent = "CONNECT HW";
-          if (hwStatusDot) {
-            hwStatusDot.classList.remove('bg-[#7edc6b]', 'animate-ping');
-            hwStatusDot.classList.add('bg-slate-400');
-          }
-          if (hwModalDot) {
-            hwModalDot.classList.remove('bg-emerald-500', 'shadow-md');
-            hwModalDot.classList.add('bg-slate-400');
-          }
-          if (hwModalTitle) hwModalTitle.textContent = "Hardware Disconnected";
-          if (hwModalSub) hwModalSub.textContent = "Select Serial COM port or BLE device";
-          if (hwDisconnectBtn) hwDisconnectBtn.classList.add('hidden');
-        }
-      }
-
-      function handleTelemetryPacket(rawText) {
+    // Send Command to Hardware
+    async function sendCommand(cmd) {
+      logMsg("TX: " + cmd);
+      if (serialWriter) {
         try {
-          const data = JSON.parse(rawText);
-          logTerminal("RX JSON", JSON.stringify(data), "text-emerald-400");
-
-          if (data.tds !== undefined) {
-            const aquaTdsVal = document.getElementById('aquatds-tds-val');
-            const demoTdsVal = document.getElementById('demo-ppm-val');
-            if (aquaTdsVal) aquaTdsVal.textContent = data.tds + ' ppm';
-            if (demoTdsVal) demoTdsVal.textContent = data.tds;
-          }
-
-          if (data.moisture !== undefined || data.soil !== undefined) {
-            const m = data.moisture !== undefined ? data.moisture : data.soil;
-            const moistureDisplay = document.getElementById('moisture-display');
-            const moistureProgressBar = document.getElementById('moisture-progress-bar');
-            const aquaSoilVal = document.getElementById('aquatds-soil-val');
-            const demoSoilVal = document.getElementById('demo-soil-val');
-            if (moistureDisplay) moistureDisplay.textContent = m + '%';
-            if (moistureProgressBar) moistureProgressBar.style.width = Math.min(100, m) + '%';
-            if (aquaSoilVal) aquaSoilVal.textContent = m + '%';
-            if (demoSoilVal) demoSoilVal.textContent = m + '%';
-          }
-
-          if (data.flow !== undefined) {
-            const aquaFlowVal = document.getElementById('aquatds-flow-val');
-            const demoFlowVal = document.getElementById('demo-flow-val');
-            if (aquaFlowVal) aquaFlowVal.textContent = data.flow + ' L/s';
-            if (demoFlowVal) demoFlowVal.textContent = data.flow;
-          }
-
-          // Dynamic AI Agronomist interpretation
-          const aiText = document.getElementById('ai-summary-text');
-          if (aiText && (data.tds !== undefined || data.moisture !== undefined)) {
-            const tds = data.tds || 450;
-            const moist = data.moisture || 35;
-            if (tds > 500) {
-              aiText.textContent = `"Live Impurity Alert: Salinity is elevated (${tds} ppm). System has automatically diverted water through the bio-filter bed (Servo 90°). Soil moisture is ${moist}%. Nutrients will mix once water purity normalizes."`;
-            } else {
-              aiText.textContent = `"Optimal Source Quality: Water TDS is pure (${tds} ppm). Diverter valve set to clean bypass (0°). Soil moisture is ${moist}%. Precision fertigation active."`;
-            }
-          }
-
-          const fbBadge = document.getElementById('firebase-sync-badge');
-          if (fbBadge && data.tds !== undefined) {
-            fbBadge.textContent = `LIVE: ${data.tds} ppm | ${data.moisture || '--'}%`;
-          }
+          const encoder = new TextEncoder();
+          await serialWriter.write(encoder.encode(cmd + "\n"));
         } catch (e) {
-          logTerminal("RX RAW", rawText, "text-sky-300");
+          logMsg("Serial TX Error: " + e.message);
+        }
+      } else if (bleCharacteristic) {
+        try {
+          const encoder = new TextEncoder();
+          await bleCharacteristic.writeValue(encoder.encode(cmd + "\n"));
+        } catch (e) {
+          logMsg("BLE TX Error: " + e.message);
         }
       }
+    }
 
-      window.sendHardwareCommand = async function (cmd) {
-        const payload = cmd.endsWith('\n') ? cmd : (cmd + '\n');
-        logTerminal("TX", payload.trim(), "text-amber-300 font-bold");
+    // Web Serial Connection
+    btnConnectSerial.addEventListener('click', async () => {
+      if (!("serial" in navigator)) {
+        alert("Web Serial API is supported in Google Chrome / Microsoft Edge on Desktop.");
+        return;
+      }
+      try {
+        logMsg("Requesting Serial COM port...");
+        activePort = await navigator.serial.requestPort();
+        await activePort.open({ baudRate: 9600 });
+        
+        const textDecoder = new TextDecoderStream();
+        activePort.readable.pipeTo(textDecoder.writable);
+        serialReader = textDecoder.readable.getReader();
+        serialWriter = activePort.writable.getWriter();
 
-        if (serialWriter) {
-          try {
-            const encoder = new TextEncoder();
-            await serialWriter.write(encoder.encode(payload));
-          } catch (e) {
-            logTerminal("ERR TX", e.message, "text-red-400");
-          }
-        } else if (bleCharacteristic) {
-          try {
-            const encoder = new TextEncoder();
-            await bleCharacteristic.writeValue(encoder.encode(payload));
-          } catch (e) {
-            logTerminal("ERR TX", e.message, "text-red-400");
-          }
-        } else {
-          logTerminal("INFO", `[Simulated TX] ${payload.trim()} (Connect hardware for real transmission)`, "text-slate-400");
-        }
-      };
+        setConnectedUI(true, "Online & Connected");
+        logMsg("Connected to Serial at 9600 baud!");
+        setTimeout(() => hwModal.classList.add('hidden'), 1000);
 
-      // Connect Web Serial (HC-05 or USB)
-      if (connectSerialBtn) {
-        connectSerialBtn.addEventListener('click', async () => {
-          if (!("serial" in navigator)) {
-            alert("Web Serial API is supported in Google Chrome, Microsoft Edge, and Opera (PC / Android OTG). Please open in Chrome!");
-            return;
-          }
-          try {
-            logTerminal("SYS", "Prompting user for Serial COM port...", "text-sky-300");
-            const port = await navigator.serial.requestPort();
-            await port.open({ baudRate: 9600 });
-            activePort = port;
-            serialWriter = port.writable.getWriter();
-            updateHwUI(true, "Serial COM (9600)");
-            logTerminal("SYS", "Connected to Serial port at 9600 baud!", "text-emerald-400");
-
-            const decoder = new TextDecoderStream();
-            port.readable.pipeTo(decoder.writable);
-            const reader = decoder.readable.getReader();
-            serialReader = reader;
-
-            let buffer = "";
-            while (true) {
-              const { value, done } = await reader.read();
-              if (done) break;
-              if (value) {
-                buffer += value;
-                const lines = buffer.split("\n");
-                buffer = lines.pop();
-                for (const line of lines) {
-                  const trimmed = line.trim();
-                  if (trimmed.length > 0) handleTelemetryPacket(trimmed);
-                }
+        // Read Loop
+        let buffer = "";
+        while (true) {
+          const { value, done } = await serialReader.read();
+          if (done) break;
+          if (value) {
+            buffer += value;
+            const lines = buffer.split('\n');
+            buffer = lines.pop();
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (trimmed.startsWith('{')) {
+                handleIncomingJson(trimmed);
               }
             }
-          } catch (err) {
-            console.error("Serial error:", err);
-            logTerminal("ERR", err.message || "Port selection cancelled", "text-red-400");
-            updateHwUI(false);
           }
-        });
-      }
-
-      // Connect Web Bluetooth (BLE)
-      if (connectBleBtn) {
-        connectBleBtn.addEventListener('click', async () => {
-          if (!("bluetooth" in navigator)) {
-            alert("Web Bluetooth API is supported in Chrome/Edge on Android, Mac, Windows. Please use Chrome!");
-            return;
-          }
-          try {
-            logTerminal("SYS", "Scanning for Bluetooth devices...", "text-sky-300");
-            const device = await navigator.bluetooth.requestDevice({
-              acceptAllDevices: true,
-              optionalServices: [
-                '0000ffe0-0000-1000-8000-00805f9b34fb',
-                '6e400001-b5a3-f393-e0a9-e50e24dcca9e'
-              ]
-            });
-            bleDevice = device;
-            logTerminal("SYS", `Connecting GATT to ${device.name || 'Device'}...`, "text-sky-300");
-            const server = await device.gatt.connect();
-
-            let uartService = null;
-            try {
-              uartService = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
-            } catch (e) {
-              uartService = await server.getPrimaryService('6e400001-b5a3-f393-e0a9-e50e24dcca9e');
-            }
-
-            const chars = await uartService.getCharacteristics();
-            bleCharacteristic = chars[0];
-            await bleCharacteristic.startNotifications();
-            bleCharacteristic.addEventListener('characteristicvaluechanged', (event) => {
-              const val = new TextDecoder().decode(event.target.value);
-              handleTelemetryPacket(val.trim());
-            });
-
-            updateHwUI(true, `BLE: ${device.name || 'AgroFlow'}`);
-            logTerminal("SYS", `BLE Paired: ${device.name || 'AgroFlow'}`, "text-emerald-400");
-          } catch (err) {
-            console.error("BLE error:", err);
-            logTerminal("ERR", err.message || "BLE cancelled", "text-red-400");
-            updateHwUI(false);
-          }
-        });
-      }
-
-      // Disconnect Action
-      if (hwDisconnectBtn) {
-        hwDisconnectBtn.addEventListener('click', async () => {
-          try {
-            if (serialReader) { await serialReader.cancel(); serialReader = null; }
-            if (serialWriter) { await serialWriter.close(); serialWriter = null; }
-            if (activePort) { await activePort.close(); activePort = null; }
-            if (bleDevice && bleDevice.gatt && bleDevice.gatt.connected) {
-              bleDevice.gatt.disconnect();
-              bleDevice = null;
-              bleCharacteristic = null;
-            }
-            updateHwUI(false);
-            logTerminal("SYS", "Hardware disconnected.", "text-amber-400");
-          } catch (e) {
-            console.warn("Disconnect error:", e);
-          }
-        });
-      }
-
-      // Manual Command Sender
-      if (hwSendCmdBtn && hwCmdInput) {
-        hwSendCmdBtn.addEventListener('click', () => {
-          const val = hwCmdInput.value.trim();
-          if (val) {
-            window.sendHardwareCommand(val);
-            hwCmdInput.value = '';
-          }
-        });
-        hwCmdInput.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') {
-            const val = hwCmdInput.value.trim();
-            if (val) {
-              window.sendHardwareCommand(val);
-              hwCmdInput.value = '';
-            }
-          }
-        });
-      }
-
-      // Wire Tab 1 Buttons to transmit commands
-      if (startBtn) {
-        startBtn.addEventListener('click', () => window.sendHardwareCommand('CMD:PUMP:ON'));
-      }
-      if (endBtn) {
-        endBtn.addEventListener('click', () => window.sendHardwareCommand('CMD:PUMP:OFF'));
-      }
-
-    })();
-  </script>
-
-  <!-- ========================================================================= -->
-  <!-- FIREBASE SDK INITIALIZATION (Project: agroflow-8da1a)                     -->
-  <!-- ========================================================================= -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAnalytics, isSupported as isAnalyticsSupported } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
-
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyDErqM-MVy96Um5eSyw9QRSs1coUSO-YjE",
-      authDomain: "agroflow-8da1a.firebaseapp.com",
-      projectId: "agroflow-8da1a",
-      storageBucket: "agroflow-8da1a.firebasestorage.app",
-      messagingSenderId: "354471082993",
-      appId: "1:354471082993:web:4ae3082776443b9b6ba250",
-      measurementId: "G-0WZPED2MEK"
-    };
-
-    // Initialize Firebase
-    try {
-      const app = initializeApp(firebaseConfig);
-      window.__firebaseApp = app;
-      console.log("[AgroFlow] Firebase app initialized successfully:", app.name);
-
-      isAnalyticsSupported().then(supported => {
-        if (supported) {
-          const analytics = getAnalytics(app);
-          window.__firebaseAnalytics = analytics;
-          console.log("[AgroFlow] Firebase Analytics active (Measurement ID: G-0WZPED2MEK)");
         }
-      }).catch(err => console.warn("[AgroFlow] Analytics notice:", err));
-
-      const fbBadge = document.getElementById('firebase-sync-badge');
-      if (fbBadge) {
-        fbBadge.textContent = 'Cloud Sync: agroflow-8da1a';
+      } catch (err) {
+        logMsg("Serial Error: " + err.message);
+        setConnectedUI(false);
       }
-    } catch (e) {
-      console.error("[AgroFlow] Firebase initialization failed:", e);
-    }
-  </script>
+    });
 
+    // Web Bluetooth Connection (HC-05 BLE)
+    btnConnectBle.addEventListener('click', async () => {
+      if (!("bluetooth" in navigator)) {
+        alert("Web Bluetooth API is supported in Google Chrome.");
+        return;
+      }
+      try {
+        logMsg("Scanning for Bluetooth devices...");
+        const device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: [
+            '0000ffe0-0000-1000-8000-00805f9b34fb',
+            '6e400001-b5a3-f393-e0a9-e50e24dcca9e'
+          ]
+        });
+        bleDevice = device;
+        logMsg("Connecting GATT to " + (device.name || "Device") + "...");
+        const server = await device.gatt.connect();
+
+        let uartService = null;
+        try {
+          uartService = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
+        } catch (e) {
+          uartService = await server.getPrimaryService('6e400001-b5a3-f393-e0a9-e50e24dcca9e');
+        }
+
+        const chars = await uartService.getCharacteristics();
+        bleCharacteristic = chars[0];
+        await bleCharacteristic.startNotifications();
+        bleCharacteristic.addEventListener('characteristicvaluechanged', (e) => {
+          const val = new TextDecoder().decode(e.target.value);
+          const trimmed = val.trim();
+          if (trimmed.startsWith('{')) {
+            handleIncomingJson(trimmed);
+          }
+        });
+
+        setConnectedUI(true, "Online & Connected");
+        logMsg("Connected via Bluetooth!");
+        setTimeout(() => hwModal.classList.add('hidden'), 1000);
+      } catch (err) {
+        logMsg("BLE Error: " + err.message);
+        setConnectedUI(false);
+      }
+    });
+
+    // Refresh Action (Sends 'r' to trigger 2-minute sampling window)
+    btnRefresh.addEventListener('click', () => {
+      sendCommand("r");
+      btnRefresh.classList.add('scale-95');
+      setTimeout(() => btnRefresh.classList.remove('scale-95'), 150);
+    });
+
+    // Start Buttons (Triggers Irrigation Start / Servo 90°)
+    startBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        sendCommand("CMD:VALVE:90");
+        btn.classList.add('scale-95');
+        setTimeout(() => btn.classList.remove('scale-95'), 150);
+      });
+    });
+
+    // End Buttons (Triggers Irrigation Stop / Servo 0°)
+    endBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        sendCommand("CMD:VALVE:0");
+        btn.classList.add('scale-95');
+        setTimeout(() => btn.classList.remove('scale-95'), 150);
+      });
+    });
+
+    // Set initial UI state
+    setConnectedUI(false);
+  </script>
 </body>
 </html>
